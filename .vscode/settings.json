@@ -1,3 +1,9 @@
 {
-	"cSpell.words": ["corsheaders", "jazzmin", "simplejwt", "userauths"]
+	"cSpell.words": [
+		"corsheaders",
+		"jazzmin",
+		"Mytoken",
+		"simplejwt",
+		"userauths"
+	]
 }
