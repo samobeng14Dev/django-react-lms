@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
 
 # Create a custom your models here.
 
@@ -46,3 +47,13 @@ class Profile(models.Model):
         if not self.full_name:
             self.full_name = self.user.username
         super().save(*args, **kwargs)
+# corresponding profile when user is created
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+# if instance is updated, the related Profile instance is also saved.
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()     
+# connect signals to user model    
+post_save.connect(create_user_profile, sender=User)
+post_save.connect(save_user_profile, sender=User)
