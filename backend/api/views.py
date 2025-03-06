@@ -5,6 +5,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
 from userauths.models import User
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -42,5 +44,28 @@ class PasswordResetEmailVerifyAPIView(generics.RetrieveAPIView):
             user.otp = generate_random_otp()
             user.save()
             link = f"http://localhost:5173/create-new-password/?otp={user.otp}&uuid64={uuid64}&refresh_token={refresh_token}"
-            print("link =====", link)
+           
         return user
+
+class PasswordChangeAPIView(generics.UpdateAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = api_serializers.UserSerializer
+
+    def create(self, request,*args,**kwargs):
+        payload = request.data
+
+        otp= payload['otp']
+        uuid64 = payload['uuid64']
+        password= payload['password']
+
+        user= User.objects.get(id=uuid64,otp=otp)
+        if user:
+            user.set_password(password)
+            user.otp=''
+            user.save()
+
+            return Response({'message':'Password changed successfully'},status=status.HTTP_201_CREATED)
+        else:
+            return Response({'message':'User does not exist'},status=status.HTTP_404_NOT_FOUND)
+           
+  
