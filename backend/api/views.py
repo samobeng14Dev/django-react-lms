@@ -18,7 +18,7 @@ class MytokenObtainPairView(TokenObtainPairView):
     serializer_class = api_serializers.MyTokenObtainPairSerializer
 
 
-class RegisterView(generics.GenericAPIView):
+class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [AllowAny]
     serializer_class = api_serializers.RegisterSerializer

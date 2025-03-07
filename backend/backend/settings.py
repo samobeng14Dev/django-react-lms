@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 from datetime import timedelta
 from environs import Env
-env=Env()
+env = Env()
 env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'anymail',
+    'drf_yasg',
 
 ]
 
