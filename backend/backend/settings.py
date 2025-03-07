@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework_simplejwt',
     'corsheaders',
+    'anymail',
 
 ]
 
@@ -141,7 +142,22 @@ MEDIA_URL = '/media/'   # media url
 MEDIA_ROOT = BASE_DIR/'media'  # media root
 
 AUTH_USER_MODEL = 'userauths.User'
+
 MAILGUN_API_KEY = env('MAILGUN_API_KEY')
+MAILGUN_API_TOKEN = env('MAILGUN_API_TOKEN')
+MAILGUN_SENDER_DOMAIN = env('MAILGUN_DOMAIN_NAME')
+MAILGUN_DOMAIN_NAME = env('MAILGUN_DOMAIN_NAME')
+FROM_EMAIL = env('FROM_EMAIL')
+
+ANYMAIL = {
+    "MAILGUN_API_KEY": MAILGUN_API_KEY,
+    "MAILGUN_SENDER_DOMAIN": MAILGUN_SENDER_DOMAIN,
+}
+
+FROM_EMAIL = FROM_EMAIL
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+
+# https://anymail.dev/en/v12.0/installation/
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
