@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 from rest_framework.permissions import AllowAny
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -70,7 +71,7 @@ class PasswordChangeAPIView(generics.UpdateAPIView):
     permission_classes = [AllowAny]
     serializer_class = api_serializers.UserSerializer
 
-    def create(self, request,*args,**kwargs):
+    def create(self, request:Request, *args,**kwargs):
         payload = request.data
 
         otp= payload['otp']
