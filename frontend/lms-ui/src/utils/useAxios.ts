@@ -1,32 +1,33 @@
-import axios from 'axios';
+import axios from "axios";
+import Cookies from "js-cookie";
 import { getRefreshedToken, isAccessTokenExpired, setAuthUser } from "./auth";
-import { API_BASE_URL } from './constants';
-import Cookies from 'js-cookie';
+import { API_BASE_URL } from "./constants";
 
 const useAxios = () => {
-    const accessToken = Cookies.get("access_token");
-
     const axiosInstance = axios.create({
         baseURL: API_BASE_URL,
-        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
     });
 
     axiosInstance.interceptors.request.use(async (req) => {
-        const accessToken = Cookies.get("access_token"); // Ensure latest token is used
+        let accessToken = Cookies.get("access_token");
 
-        if (!accessToken || !isAccessTokenExpired(accessToken)) {
+        if (accessToken && !isAccessTokenExpired(accessToken)) {
             req.headers.Authorization = `Bearer ${accessToken}`;
             return req;
         }
 
         try {
             const response = await getRefreshedToken();
-            if (response) {
-                setAuthUser(response.access, response.refresh);
-                req.headers.Authorization = `Bearer ${response.access}`;
+            if (!response) {
+                return Promise.reject("Failed to refresh token");
             }
+            
+            setAuthUser(response.access, response.refresh);
+            Cookies.set("access_token", response.access); // Ensure updated token is stored
+            req.headers.Authorization = `Bearer ${response.access}`;
         } catch (error) {
             console.error("Token refresh failed:", error);
+            return Promise.reject(error);
         }
 
         return req;
