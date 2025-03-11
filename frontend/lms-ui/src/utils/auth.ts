@@ -28,10 +28,7 @@ interface SetUserPayload {
 
 export const login = async ({ email, password }: LoginPayload) => {
     try {
-        const { data, status } = await apiInstance.post("user/token/", {
-            email,
-            password,
-        });
+        const { data, status } = await apiInstance.post("user/token/", { email, password });
 
         if (status === 200) {
             await setAuthUser(data.access, data.refresh);
@@ -78,62 +75,65 @@ export const logout = () => {
 };
 
 export const setUser = async (): Promise<SetUserPayload | null> => {
-    const access_token = Cookies.get("access_token");
-    const refresh_token = Cookies.get("refresh_token");
+    let access_token = Cookies.get("access_token") ?? "";
+    let refresh_token = Cookies.get("refresh_token") ?? "";
 
     if (!access_token || !refresh_token) {
         Swal.fire("Error", "Tokens do not exist", "error");
+        useAuthStore.getState().setUser(null); // Clear user state
         return null;
     }
 
     if (isAccessTokenExpired(access_token)) {
         const response = await getRefreshedToken();
-        if (!response) return null;
-        await setAuthUser(response.access, response.refresh);
-    } else {
-        await setAuthUser(access_token, refresh_token);
+        if (!response) {
+            useAuthStore.getState().setUser(null); // Ensure user state is cleared on failure
+            return null;
+        }
+        access_token = response.access;
+        refresh_token = response.refresh;
     }
 
+    if (access_token && refresh_token) {
+        await setAuthUser(access_token, refresh_token);
+    } else {
+        useAuthStore.getState().setUser(null);
+        Swal.fire("Error", "Failed to set user", "error");
+    }
     return { access_token, refresh_token };
 };
 
-export const setAuthUser = async (access_token: string, refresh_token: string) => {
-    Cookies.set("access_token", access_token, {
-        expires: 1,
-        secure: true,
-    });
+export const setAuthUser = async (access_token: string = "", refresh_token: string = "") => {
+    if (!access_token || !refresh_token) {
+        useAuthStore.getState().setUser(null);
+        return;
+    }
 
-    Cookies.set("refresh_token", refresh_token, {
-        expires: 7,
-        secure: true,
-    });
+    Cookies.set("access_token", access_token, { expires: 1, secure: true });
+    Cookies.set("refresh_token", refresh_token, { expires: 7, secure: true });
 
     try {
         const decodedToken = jwt_decode<UserData>(access_token);
-
-        if (decodedToken) {
-            useAuthStore.getState().setUser(decodedToken);
-        } else {
-            useAuthStore.getState().setLoading(false);
-        }
+        useAuthStore.getState().setUser(decodedToken);
     } catch (error) {
         console.error("Error decoding token:", error);
-        useAuthStore.getState().setLoading(false);
+        useAuthStore.getState().setUser(null);
     }
 };
 
 export const getRefreshedToken = async () => {
-    const refresh_token = Cookies.get("refresh_token");
-
+    const refresh_token = Cookies.get("refresh_token") ?? "";
     if (!refresh_token) {
         Swal.fire("Error", "Refresh token is missing", "error");
         return null;
     }
 
     try {
-        const response = await apiInstance.post("token/refresh/", {
-            refresh: refresh_token,
-        });
+        const response = await apiInstance.post("token/refresh/", { refresh: refresh_token });
+
+        if (response.data.access && response.data.refresh) {
+            await setAuthUser(response.data.access, response.data.refresh);
+        }
 
         return response.data;
     } catch (error) {
@@ -147,6 +147,7 @@ export const isAccessTokenExpired = (access_token: string) => {
         const decodedToken: any = jwt_decode(access_token);
         return decodedToken.exp < Date.now() / 1000;
     } catch (error) {
+        console.error("Failed to decode access token:", error);
         return true;
     }
 };
