@@ -24,6 +24,7 @@ const useAxios = () => {
             
             setAuthUser(response.access, response.refresh);
             Cookies.set("access_token", response.access); // Ensure updated token is stored
+            Cookies.set("refresh_token",response.refresh)
             req.headers.Authorization = `Bearer ${response.access}`;
         } catch (error) {
             console.error("Token refresh failed:", error);

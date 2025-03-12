@@ -74,6 +74,7 @@ export const logout = () => {
     Swal.fire("Logged Out", "You have been logged out", "info");
 };
 
+// aims to set the authenticated user by managing access and refresh tokens
 export const setUser = async (): Promise<SetUserPayload | null> => {
     let access_token = Cookies.get("access_token") ?? "";
     let refresh_token = Cookies.get("refresh_token") ?? "";
@@ -102,7 +103,7 @@ export const setUser = async (): Promise<SetUserPayload | null> => {
     }
     return { access_token, refresh_token };
 };
-
+// responsible for setting the authenticated user's state in the application
 export const setAuthUser = async (access_token: string = "", refresh_token: string = "") => {
     if (!access_token || !refresh_token) {
         useAuthStore.getState().setUser(null);
