@@ -1,26 +1,63 @@
+
 {
 	"compilerOptions": {
-		"target": "ES2020",
-		"useDefineForClassFields": true,
+		/* Target modern JS */
+		"target": "ESNext",
 		"module": "ESNext",
-		"lib": ["ES2020", "DOM", "DOM.Iterable"],
-		"skipLibCheck": true,
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
 
-		/* Bundler mode */
-		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true,
-		"isolatedModules": true,
-		"moduleDetection": "force",
-		"noEmit": true,
-
-		/* Linting */
+		/* TypeScript settings */
 		"strict": true,
+		"skipLibCheck": true,
+		"noImplicitAny": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUncheckedSideEffectImports": true,
-		// other options
-		"jsx": "react"
+		"forceConsistentCasingInFileNames": true,
+
+		/* React + Vite settings */
+		"jsx": "react-jsx",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
+		"allowJs": true,
+		"isolatedModules": true,
+		"noEmit": true,
+
+		/* Type Checking */
+		"exactOptionalPropertyTypes": true
 	},
-	"include": ["src"]
+	"include": ["src"],
+	"exclude": ["node_modules", "dist"],
+	"types": ["vite/client"]
 }
+
+
+
+
+// {
+// 	"compilerOptions": {
+// 		"target": "ES2020",
+// 		"useDefineForClassFields": true,
+// 		"module": "ESNext",
+// 		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+// 		"skipLibCheck": true,
+
+// 		/* Bundler mode */
+// 		"moduleResolution": "bundler",
+// 		"allowImportingTsExtensions": true,
+// 		"isolatedModules": true,
+// 		"moduleDetection": "force",
+// 		"noEmit": true,
+
+// 		/* Linting */
+// 		"strict": true,
+// 		"noUnusedLocals": true,
+// 		"noUnusedParameters": true,
+// 		"noFallthroughCasesInSwitch": true,
+// 		"noUncheckedSideEffectImports": true,
+// 		// other options
+// 		"jsx": "react"
+// 	},
+// 	"include": ["src"]
+// }

@@ -80,7 +80,7 @@ export const setUser = async (): Promise<SetUserPayload | null> => {
     let refresh_token = Cookies.get("refresh_token") ?? "";
 
     if (!access_token || !refresh_token) {
-        Swal.fire("Error", "Tokens do not exist", "error");
+        // Swal.fire("Error", "Tokens do not exist", "error");
         useAuthStore.getState().setUser(null); // Clear user state
         return null;
     }

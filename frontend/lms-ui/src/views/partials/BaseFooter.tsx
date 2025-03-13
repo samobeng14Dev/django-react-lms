@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 function BaseFooter() {
   return (
@@ -8,10 +8,10 @@ function BaseFooter() {
           <div className="col-lg-4 col-md-6 col-12 text-white">
             {/* about company */}
             <div className="mb-4">
-              <h1>Desphixs</h1>
+              <h1>SAM</h1>
               <div className="mt-4">
                 <p>
-                  Desphixs is feature-rich components and beautifully Bootstrap UIKit
+                  SAM is feature-rich components and beautifully Bootstrap UIKit
                   for developers, built with bootstrap responsive framework.
                 </p>
                 {/* social media */}
@@ -159,32 +159,32 @@ function BaseFooter() {
         </div>
         <div className="row align-items-center g-0 border-top py-2 mt-6">
           {/* Desc */}
-          <div className="col-md-10 col-12">
-            <div className="d-lg-flex align-items-center">
+            <div className="col-md-10 col-12 d-flex justify-content-center">
+              <div className="d-lg-flex align-items-center text-align-center">
               <div className="me-4">
                 <span>
-                  ©<span id="copyright5"></span>
-                  Desphixs
+                ©<span id="copyright5"></span>
+                Sam
                 </span>
               </div>
               <div>
                 <nav className="nav nav-footer">
-                  <a className="nav-link text-white ps-0" href="#">
-                    Privacy Policy
-                  </a>
-                  <a className="nav-link text-white px-2 px-md-3" href="#">
-                    Cookie Notice
-                  </a>
-                  <a className="nav-link text-white d-none d-lg-block" href="#">
-                    Do Not Sell My Personal Information
-                  </a>
-                  <a className="nav-link text-white" href="#">
-                    Terms of Use
-                  </a>
+                <a className="nav-link text-white ps-0" href="#">
+                  Privacy Policy
+                </a>
+                <a className="nav-link text-white px-2 px-md-3" href="#">
+                  Cookie Notice
+                </a>
+                <a className="nav-link text-white d-none d-lg-block" href="#">
+                  Do Not Sell My Personal Information
+                </a>
+                <a className="nav-link text-white ms-2" href="#">
+                  Terms of Use
+                </a>
                 </nav>
               </div>
+              </div>
             </div>
-          </div>
           {/* Links */}
           <div className="col-12 col-md-2 d-md-flex justify-content-end">
             <div className="dropdown">
