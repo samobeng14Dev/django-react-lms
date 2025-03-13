@@ -3,7 +3,7 @@ import apiInstance from "./axios";
 import jwt_decode from "jwt-decode";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
-
+// Pa$$w0rd!
 interface UserData {
     user_id: string;
     username: string;
@@ -54,12 +54,12 @@ export const register = async ({ full_name, email, password1, password2 }: Regis
 
         // Automatically log in user
         await login({ email, password: password1 });
-        Swal.fire("Success", "Registration Successful", "success");
+        // Swal.fire("Success", "Registration Successful", "success");
         return { data, error: null };
     } catch (error) {
         return {
             data: null,
-            error: (error as any).response?.data?.detail || "Something went wrong",
+            error: `${(error as any).response?.data?.full_name || ""} - ${(error as any).response?.data?.email || ""}` || "Something went wrong",
         };
     }
 };
