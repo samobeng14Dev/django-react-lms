@@ -71,7 +71,7 @@ export const logout = () => {
     // Set user to null instead of an empty object
     useAuthStore.getState().setUser(null);
 
-    Swal.fire("Logged Out", "You have been logged out", "info");
+  
 };
 
 // aims to set the authenticated user by managing access and refresh tokens

@@ -4,6 +4,7 @@ import MainWrapper from "./Layouts/MainWrapper";
 import PrivateRoute from "./Layouts/PrivateRoute";
 import Register from "./views/auth/Register";
 import Login from "./views/auth/Login";
+import Logout from "./views/auth/Logout";
 
 
 const App: React.FC = () => {
@@ -13,6 +14,7 @@ const App: React.FC = () => {
                 <Routes>
                     <Route path="/register/" element={ <Register/>} /> 
                     <Route path="/login/" element={ <Login/>} /> 
+                    <Route path="/logout/" element={ <Logout/>} /> 
                 </Routes>
             </MainWrapper>
         </BrowserRouter>
