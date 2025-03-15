@@ -1,9 +1,31 @@
-import React from 'react'
-import BaseHeader from '../partials/BaseHeader'
-import BaseFooter from '../partials/BaseFooter'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import BaseHeader from '../partials/BaseHeader';
+import BaseFooter from '../partials/BaseFooter';
+import { useFormik } from 'formik';
+import * as Yup from "yup";
+import apiInstance from '../../utils/axios';
 
-function ForgotPassword() {
+
+const ForgotPassword: React.FC = () => {
+  
+  const formik = useFormik({
+    initialValues: {
+      email: ''
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().email('Invalid email address').required('Required')
+    }),
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        await apiInstance.get(`/user/password-reset/${values}`);
+       
+      } catch (error) {
+       
+      }
+      setSubmitting(false);
+    }
+  });
+
   return (
     <>
       <BaseHeader />
@@ -19,25 +41,27 @@ function ForgotPassword() {
                     Let's help you get back into your account
                   </span>
                 </div>
-                <form className="needs-validation" noValidate>
+
+                <form className="needs-validation" noValidate onSubmit={formik.handleSubmit}>
                   <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email Address</label>
                     <input
                       type="email"
                       id="email"
-                      className="form-control"
-                      name="email"
+                      className={`form-control ${formik.touched.email && formik.errors.email ? 'is-invalid' : ''}`}
                       placeholder="johndoe@gmail.com"
+                      {...formik.getFieldProps('email')}
                       required
                     />
+                    {formik.touched.email && formik.errors.email ? (
+                      <div className="invalid-feedback">{formik.errors.email}</div>
+                    ) : null}
                   </div>
 
-                  <div>
-                    <div className="d-grid">
-                      <button type="submit" className="btn btn-primary">
-                        Reset Password <i className='fas fa-arrow-right'></i>
-                      </button>
-                    </div>
+                  <div className="d-grid">
+                    <button type="submit" className="btn btn-primary" disabled={formik.isSubmitting}>
+                      {formik.isSubmitting ? 'Sending...' : 'Reset Password'} <i className='fas fa-arrow-right'></i>
+                    </button>
                   </div>
                 </form>
               </div>
@@ -48,7 +72,7 @@ function ForgotPassword() {
 
       <BaseFooter />
     </>
-  )
+  );
 }
 
-export default ForgotPassword
+export default ForgotPassword;
