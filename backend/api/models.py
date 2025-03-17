@@ -1,8 +1,12 @@
 from django.db import models
-from userauths.models import User, Profile
-from django.utils.text import slugify
-from shortuuid.django_fields import ShortUUIDField
 from django.utils import timezone
+from django.utils.text import slugify
+from userauths.models import User, Profile
+from shortuuid.django_fields import ShortUUIDField
+from moviepy.editor import VideoFileClip
+import math
+
+
 
 # Choices for fields
 LANGUAGE = (
@@ -58,8 +62,7 @@ class Teacher(models.Model):
 
 class Category(models.Model):
     title = models.CharField(max_length=100)
-    image = models.FileField(upload_to='course-file',
-                             default='category.jpg', null=True, blank=True)
+    image = models.FileField(upload_to='course-file', default='category.jpg', null=True, blank=True)
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -95,8 +98,7 @@ class Course(models.Model):
     teacher_status = models.CharField(
         choices=TEACHER_STATUS, default='Published', max_length=20)
     featured = models.BooleanField(default=False)
-    course_id = ShortUUIDField(
-        unique=True, length=6, max_length=20, alphabet="123456789")
+    course_id = ShortUUIDField( unique=True, length=6, max_length=20, alphabet="123456789")
     slug = models.SlugField(unique=True)
     date = models.DateTimeField(default=timezone.now)
 
@@ -107,3 +109,78 @@ class Course(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
         super(Course, self).save(*args, **kwargs)
+
+    def students(self):
+        return EnrollCourse.objects.filter(course=self)  
+
+    def curriculum(self):
+        return VariantItem.objects.filter(variant_course=self)
+
+    def lectures(self):
+        return VariantItem.objects.filter(variant_course=self)
+    
+    def average_rating(self):
+        average_rating=Review.objects.filter(course=self,active=True).aggregate(avg_rating=models.Avg('rating'))
+        return average_rating['average_rating']
+    
+    def rating_count(self):
+        return Review.objects.filter(course=self, active=True).count()
+    
+    def reviews(self):
+        return Review.objects.filter(course=self, active=True)
+
+
+class Variant(models.Model):
+    course =models.ForeignKey(Course, on_delete=models.CASCADE)
+    title=models.CharField(max_length=100)
+    variant_id = ShortUUIDField(
+        unique=True, length=6, max_length=20, alphabet="123456789")
+    date=models.DateField(default=timezone.now)
+
+    def __str__(self):
+        return self.title
+    
+    def variant_items(self):
+        return VariantItem.objects.filter(variant=self)
+    
+
+class VariantItem(models.Model):  # Fixed `models.Models` typo
+    variant = models.ForeignKey(
+        Variant, on_delete=models.CASCADE, related_name="variant_items")
+    title = models.CharField(max_length=200)
+    description = models.TextField(null=True, blank=True)
+    file = models.FileField(upload_to='course-file', blank=True, null=True)
+    duration = models.DurationField(null=True, blank=True)
+    content_duration = models.CharField(max_length=100, null=True, blank=True)
+    preview = models.BooleanField(default=False)
+    variant_item_id = ShortUUIDField(
+        unique=True, length=6, max_length=20, alphabet="123456789")
+    date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'{self.variant.title} - {self.title}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.file:
+            try:
+                clip = VideoFileClip(self.file.path)
+                duration_seconds = clip.duration
+
+                minutes, remainder = divmod(duration_seconds, 60)
+                minutes = math.floor(minutes)
+                seconds = math.floor(remainder)
+
+                duration_text = f'{minutes}m {seconds}s'
+                self.content_duration = duration_text
+
+                self.save(update_fields=['content_duration'])
+            except Exception as e:
+                print(f"Error processing video file: {e}")
+
+
+    
+
+
+
