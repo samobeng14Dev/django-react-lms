@@ -181,6 +181,45 @@ class VariantItem(models.Model):  # Fixed `models.Models` typo
                 print(f"Error processing video file: {e}")
 
 
+class Question_Answer(models.Model):
+    course =models.ForeignKey(Course, on_delete=models.CASCADE)
+    user=models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    title=models.CharField(max_length=100, null=True, blank=True)
+    qa_id = ShortUUIDField(
+        unique=True, length=6, max_length=20, alphabet="123456789")
+    date=models.DateField(default=timezone.now)
+
+    def __str__(self):
+         return f'{self.user.username} - {self.title}'
+    
+    class Meta:
+        ordering=['-date']
+
+    def messages(self):
+        return Question_Answer_Message.objects.filter(question_answer=self)  
+
+    def profile(self):
+        return Profile.objects.get(user=self.user)
+
+
+class Question_Answer_Message(models.Model):
+    course=models.ForeignKey(Course, on_delete=models.CASCADE)
+    question=models.ForeignKey(Question_Answer, on_delete=models.CASCADE)
+    user=models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    message=models.TextField()
+    qam_id = ShortUUIDField(unique=True, length=6, max_length=20, alphabet="123456789")
+    qam_id = ShortUUIDField(unique=True, length=6, max_length=20, alphabet="123456789")
+    
+
+    def __str__(self):
+        return f'{self.user.username} - {self.course.title}'
+
+    class Meta:
+        ordering = ['date']
+
+    def profile(self):
+        return Profile.objects.get(user=self.user)
+
     
 
 
