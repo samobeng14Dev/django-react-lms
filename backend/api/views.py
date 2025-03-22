@@ -1,9 +1,12 @@
 from django.shortcuts import render
-from api import serializer as api_serializers
 from userauths.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
+
+from api import models as api_models
+from api import serializer as api_serializers
+
 
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
@@ -87,5 +90,12 @@ class PasswordChangeAPIView(generics.UpdateAPIView):
             return Response({'message':'Password changed successfully'},status=status.HTTP_201_CREATED)
         else:
             return Response({'message':'User does not exist'},status=status.HTTP_404_NOT_FOUND)
+        
+
+class CategoryListAPIView(generics.ListAPIView):
+    queryset = api_models.Category.objects.filter(active=True)
+    serializer_class = api_serializers.CategorySerializer
+    permission_classes = [AllowAny]
+    
            
   
