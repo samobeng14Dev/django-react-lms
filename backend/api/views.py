@@ -18,6 +18,7 @@ from rest_framework import generics
 
 import random
 
+
 class MytokenObtainPairView(TokenObtainPairView):
     serializer_class = api_serializers.MyTokenObtainPairSerializer
 
@@ -56,46 +57,51 @@ class PasswordResetEmailVerifyAPIView(generics.RetrieveAPIView):
             context = {
                 "link": link,
                 "username": user.username
-            } 
+            }
             subject = "Password Reset"
-            text_body=render_to_string('email/password_reset.txt',context)
-            html_body=render_to_string('email/password_reset.html',context)
+            text_body = render_to_string('email/password_reset.txt', context)
+            html_body = render_to_string('email/password_reset.html', context)
 
-            msg=EmailMultiAlternatives(
+            msg = EmailMultiAlternatives(
                 subject=subject,
                 from_email=settings.FROM_EMAIL,
                 to=[user.email]
             )
-            msg.attach_alternative(html_body,"text/html")
+            msg.attach_alternative(html_body, "text/html")
             msg.send()
         return user
+
 
 class PasswordChangeAPIView(generics.UpdateAPIView):
     permission_classes = [AllowAny]
     serializer_class = api_serializers.UserSerializer
 
-    def create(self, request:Request, *args,**kwargs):
+    def create(self, request: Request, *args, **kwargs):
         payload = request.data
 
-        otp= payload['otp']
+        otp = payload['otp']
         uuid64 = payload['uuid64']
-        password= payload['password']
+        password = payload['password']
 
-        user= User.objects.get(id=uuid64,otp=otp)
+        user = User.objects.get(id=uuid64, otp=otp)
         if user:
             user.set_password(password)
-            user.otp=''
+            user.otp = ''
             user.save()
 
-            return Response({'message':'Password changed successfully'},status=status.HTTP_201_CREATED)
+            return Response({'message': 'Password changed successfully'}, status=status.HTTP_201_CREATED)
         else:
-            return Response({'message':'User does not exist'},status=status.HTTP_404_NOT_FOUND)
-        
+            return Response({'message': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
 
 class CategoryListAPIView(generics.ListAPIView):
     queryset = api_models.Category.objects.filter(active=True)
     serializer_class = api_serializers.CategorySerializer
     permission_classes = [AllowAny]
-    
-           
-  
+
+
+class CourseListAPView(generics.ListAPIView):
+    queryset = api_models.Course.objects.filter(
+        platform_status='published', teacher_course_status='published')
+    serializer_class = api_serializers.CourseSerializer
+    permission_classes = [AllowAny]
