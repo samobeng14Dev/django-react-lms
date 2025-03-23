@@ -105,3 +105,49 @@ class CourseListAPView(generics.ListAPIView):
         platform_status='published', teacher_course_status='published')
     serializer_class = api_serializers.CourseSerializer
     permission_classes = [AllowAny]
+
+class CourseDetailAPIView(generics.RetrieveAPIView):
+    queryset = api_models.Course.objects.filter(
+        platform_status='published', teacher_course_status='published')
+    serializer_class = api_serializers.CourseSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        slug = self.kwargs['slug']
+        course = api_models.Course.objects.get(slug=slug, platform_status='published', teacher_course_status='published')
+        return course
+
+
+class CartAPIView(generics.CreateAPIView):
+    serializer_class = api_serializers.CartSerializer
+    queryset=api_models.Cart.objects.all()
+    permission_classes = [AllowAny]
+
+    def create(self, request: Request, *args, **kwargs):
+       course_id=request.data["course_id"]
+       user_id=request.data["user_id"]
+       price=request.data["price"]
+       country_name=request.data["country"]
+       cart_id=request.data["cart_id"]
+
+       course=api_models.Course.objects.filter(id=course_id).first()
+
+       if user_id != "undefined":
+           user = User.objects.filter(id=user_id).first()
+       else:
+           user=None
+
+       try:
+           country_object = api_models.Country.objects.filter(name=country_name).first()
+           country=country_object.name
+
+       except api_models.Country.DoesNotExist:
+           return Response({'message': 'Country does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+       if country_object:
+           tax_rate=country_object.tax_rate/100
+       else: 
+           tax_rate=0
+
+       cart=api_models.Cart.objects.filter(cart_id=cart_id, course=course).first()            
+                   

@@ -15,6 +15,10 @@ urlpatterns = [
          api_views.PasswordChangeAPIView.as_view(), name='password_change'),
 
     # Core Endpoints
-    path('core/category/', api_views.CategoryListAPIView.as_view(), name='category_list_create'),
-    path('core/course-list/', api_views.CourseListAPView.as_view(), name='course_list_create'),
+    path('core/category/', api_views.CategoryListAPIView.as_view(),
+         name='category_list_create'),
+    path('core/course-list/', api_views.CourseListAPView.as_view(),
+         name='course_list_create'),
+    path('core/course/<slug>/',
+         api_views.CourseDetailAPIView.as_view(), name='course_detail'),
 ]
