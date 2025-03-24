@@ -21,5 +21,7 @@ urlpatterns = [
          name='course_list_create'),
     path('core/course/<slug>/',
          api_views.CourseDetailAPIView.as_view(), name='course_detail'),
-    path('core/cart/', api_views.CartAPIView.as_view(), name='cart'),    
+    path('core/cart/', api_views.CartAPIView.as_view(), name='cart'),  
+    path('core/cart-list/<cart_id>', api_views.CartListAPIView.as_view(), name='cart_list'), 
+    path('core/cart-item-delete/<cart_id>/<item_id>', api_views.CartItemDeleteAPIView.as_view(), name='cart_item_delete')
 ]
