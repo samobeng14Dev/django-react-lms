@@ -21,4 +21,5 @@ urlpatterns = [
          name='course_list_create'),
     path('core/course/<slug>/',
          api_views.CourseDetailAPIView.as_view(), name='course_detail'),
+    path('core/cart/', api_views.CartAPIView.as_view(), name='cart'),    
 ]

@@ -17,6 +17,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
 
 import random
+from decimal import Decimal
 
 
 class MytokenObtainPairView(TokenObtainPairView):
@@ -149,5 +150,21 @@ class CartAPIView(generics.CreateAPIView):
        else: 
            tax_rate=0
 
-       cart=api_models.Cart.objects.filter(cart_id=cart_id, course=course).first()            
+       cart=api_models.Cart.objects.filter(cart_id=cart_id, course=course).first()  
+
+       if cart:
+           cart.course=course
+           cart.user=user
+           cart.price=price
+           cart.tax_fee=Decimal(price)*Decimal(tax_rate)
+           cart.country=country      
+           cart.cart_id=cart_id
+           cart.total=Decimal(cart.price)+Decimal(cart.tax_fee)  
+           cart.save()
+
+           return Response({'message': 'Cart updated successfully'}, status=status.HTTP_200_OK)
+       else:
+           cart=api_models.Cart.objects.create(course=course, user=user, price=price, tax_fee=Decimal(price)*Decimal(tax_rate), country=country, cart_id=cart_id, total=Decimal(price)+Decimal(price)*Decimal(tax_rate))
+
+           return Response({'message': 'Cart created successfully'}, status=status.HTTP_201_CREATED)
                    
