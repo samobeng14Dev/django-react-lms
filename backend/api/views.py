@@ -3,6 +3,7 @@ from userauths.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.db import transaction
 
 from api import models as api_models
 from api import serializer as api_serializers
@@ -200,40 +201,186 @@ class CartItemDeleteAPIView(generics.DestroyAPIView):
 
         return api_models.Cart.objects.filter(cart_id=cart_id, id=item_id).first()
 
+
 class CartStatsAPIView(generics.RetrieveAPIView):
-    serializer_class=api_serializers.CartSerializer
-    permission_classes=[AllowAny]
-    lookup_field='cart_id'
+    serializer_class = api_serializers.CartSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'cart_id'
 
-    def get_queryset(self):
-       cart_id = self.kwargs['cart_id']
-       queryset = api_models.Cart.objects.filter(cart_id=cart_id)
-       return queryset
+    def get(self, request, *args, **kwargs):
+        cart_id = self.kwargs['cart_id']
+        cart_items = api_models.Cart.objects.filter(cart_id=cart_id)
+
+        # Using Python's sum() and comprehensions for cleaner aggregation
+        total_price = sum(float(item.price) for item in cart_items)
+        total_tax = sum(float(item.tax_fee) for item in cart_items)
+        total_total = sum(round(float(item.total), 2) for item in cart_items)
+
+        data = {
+            'total_price': total_price,
+            'total_tax': total_tax,
+            'total_total': total_total
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class CreateOrderAPIView(generics.CreateAPIView):
+    serializer_class = api_serializers.CartSerializer
+    permission_classes = [AllowAny]
+    queryset = api_models.CartOrder.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+
+        # Extract fields from request data
+        full_name = data.get('full_name')
+        email = data.get('email')
+        country = data.get('country')
+        cart_id = data.get('cart_id')
+        user_id = data.get('user_id')
+
+        # Fetch user if user_id is valid, otherwise set to None
+        user = User.objects.filter(id=user_id).first(
+        ) if user_id and user_id != "undefined" else None
+
+        # Fetch cart items with related course and teacher data to optimize database queries
+        cart_items = api_models.Cart.objects.filter(
+            cart_id=cart_id).select_related('course__teacher')
+
+        # Calculate totals using list comprehensions
+        total_price = sum(Decimal(item.price) for item in cart_items)
+        total_tax = sum(Decimal(item.tax_fee) for item in cart_items)
+        total_initial_total = sum(Decimal(item.total) for item in cart_items)
+        total_total = total_initial_total
+
+        # Create order and order items inside an atomic transaction
+        with transaction.atomic():
+            order = api_models.CartOrder.objects.create(
+                full_name=full_name,
+                email=email,
+                country=country,
+                student=user,
+                sub_total=total_price,
+                tax_fee=total_tax,
+                initial_total=total_initial_total,
+                total=total_total,
+            )
+
+            # Add teachers and create order items
+            teachers_set = set()
+            for item in cart_items:
+                api_models.CartOrderItem.objects.create(
+                    order=order,
+                    course=item.course,
+                    price=item.price,
+                    tax_fee=item.tax_fee,
+                    total=item.total,
+                    initial_total=item.total,
+                    teacher=item.course.teacher
+                )
+                teachers_set.add(item.course.teacher)
+
+            # Add all unique teachers to the order in one step
+            order.teachers.add(*teachers_set)
+            order.save()
+
+        # Return success response
+        return Response({'message': 'Order created successfully'}, status=status.HTTP_201_CREATED)
     
-    def get(self,requests,*args,**kwargs):
-        query_set=self.get_queryset()
+# class CreateOrderAPIView(generics.CreateAPIView):
+#     serializer_class=api_serializers.CartSerializer
+#     permission_classes=[AllowAny]
+#     queryset=api_models.CartOrder.objects.all()
 
-        total_price=0.00
-        total_tax=0.00
-        total_total=0.00
+#     def create(self, request, *args, **kwargs):
+#         full_name=request.data['full_name']
+#         email=request.data['email']
+#         country=request.data['country']
+#         cart_id=request.data['cart_id']
+#         user_id=request.data['user_id']
 
-        for cart_item in query_set:
-           total_price+=float(self.calculate_price(cart_item))
-           total_tax+=float(self.calculate_tax(cart_item))
-           total_total+=round(float(self.calculate_total(cart_item)),2)
+#         if user_id != 0 and user_id != "undefined":
+#             user=User.objects.filter(id=user_id).first()    
+#         else:
+#             user=None    
 
-        data={
-            'total_price':total_price,
-            'total_tax':total_tax,
-            'total_total':total_total
-        }   
-        return Response(data,status=status.HTTP_200_OK)
+#         cart_items=api_models.Cart.objects.filter(cart_id=cart_id)
+#         total_price=Decimal(0.00)
+#         total_tax=Decimal(0.00)
+#         total_initial_total=Decimal(0.00)    
+#         total_total=Decimal(0.00)
 
-    def calculate_price(self,cart_item):
-        return cart_item.price
-    def calculate_tax(self,cart_item):
-        return cart_item.tax_fee
-    def calculate_total(self,cart_item):
-        return cart_item.total
+#         order=api_models.CartOrder.objects.create(
+#             full_name=full_name,
+#             email=email,
+#             country=country,
+#             student=user
+#         )
+
+#         for c in cart_items:
+#             api_models.CartOrderItem.objects.create(
+#                 order=order,
+#                 course=c.course,
+#                 price=c.price,
+#                 tax_fee=c.tax_fee,
+#                 total=c.total,
+#                 initial_total=c.total,
+#                 teacher=c.course.teacher
+#             )
+            
+#             total_price+=Decimal(c.price)
+#             total_tax+=Decimal(c.tax_fee)
+#             total_initial_total+=Decimal(c.total)
+#             total_total+=Decimal(c.total)
+
+#             order.teachers.add(c.course.teacher)
+
+#             order.sub_total=total_price
+#             order.tax_fee=total_tax
+#             order.initial_total=total_initial_total
+#             order.total=total_total
+#             order.save()    
+
+#             return Response({'message':'Order created successfully'},status=status.HTTP_201_CREATED)
+    
+
+    
+
+# class CartStatsAPIView(generics.RetrieveAPIView):
+#     serializer_class=api_serializers.CartSerializer
+#     permission_classes=[AllowAny]
+#     lookup_field='cart_id'
+
+#     def get_queryset(self):
+#        cart_id = self.kwargs['cart_id']
+#        queryset = api_models.Cart.objects.filter(cart_id=cart_id)
+#        return queryset
+    
+#     def get(self,requests,*args,**kwargs):
+#         query_set=self.get_queryset()
+
+#         total_price=0.00
+#         total_tax=0.00
+#         total_total=0.00
+
+#         for cart_item in query_set:
+#            total_price+=float(self.calculate_price(cart_item))
+#            total_tax+=float(self.calculate_tax(cart_item))
+#            total_total+=round(float(self.calculate_total(cart_item)),2)
+
+#         data={
+#             'total_price':total_price,
+#             'total_tax':total_tax,
+#             'total_total':total_total
+#         }   
+#         return Response(data,status=status.HTTP_200_OK)
+
+#     def calculate_price(self,cart_item):
+#         return cart_item.price
+#     def calculate_tax(self,cart_item):
+#         return cart_item.tax_fee
+#     def calculate_total(self,cart_item):
+#         return cart_item.total
 
     

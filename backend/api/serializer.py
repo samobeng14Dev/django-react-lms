@@ -312,3 +312,4 @@ class TeacherSummarySerializer(serializers.Serializer):
 
 class FileUploadSerializer(serializers.Serializer):
     file = serializers.FileField(required=True)
+    
