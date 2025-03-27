@@ -226,7 +226,7 @@ class CartStatsAPIView(generics.RetrieveAPIView):
 
 
 class CreateOrderAPIView(generics.CreateAPIView):
-    serializer_class = api_serializers.CartSerializer
+    serializer_class = api_serializers.CartOrderSerializer
     permission_classes = [AllowAny]
     queryset = api_models.CartOrder.objects.all()
 
@@ -320,7 +320,9 @@ class CouponApplyAPIView(generics.CreateAPIView):
             # Apply coupon to eligible items
             discount_applied = False  # Track if we successfully apply the coupon
 
+            '''order_items contains the cart items related to the order. This loop checks each item one by one.'''
             for item in order_items:
+                '''This condition checks if the current coupon has not already been applied. If it hasn’t, we proceed to apply the discount.'''
                 if coupon not in item.coupons.all():
                     discount = item.total * coupon.discount / 100
 
