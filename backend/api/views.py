@@ -19,6 +19,9 @@ from rest_framework import generics
 
 import random
 from decimal import Decimal
+import stripe
+
+stripe.api_key=settings.STRIPE_SECRET_KEY
 
 
 class MytokenObtainPairView(TokenObtainPairView):
@@ -354,6 +357,24 @@ class CouponApplyAPIView(generics.CreateAPIView):
 
         except api_models.CartOrder.DoesNotExist:
             return Response({"message": "Order Not Found", "icon": "error"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class StripeCheckoutAPIView(generics.CreateAPIView):
+    serializer_class=api_serializers.CartOrderSerializer
+    permission_classes=[AllowAny]
+
+    def create(self,request,*args,**kwargs):
+
+        order_id=self.kwargs['order_id']
+        order=api_models.CartOrder.objects.get(oid=order_id)
+
+        if not order:
+            return Response({'message': 'order not found'},status=status.HTTP_404_NOT_FOUND)        
+        
+        try:
+            pass
+        except:
+            pass
 
 
 
