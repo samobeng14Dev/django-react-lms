@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from userauths.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -372,12 +372,32 @@ class StripeCheckoutAPIView(generics.CreateAPIView):
             return Response({'message': 'order not found'},status=status.HTTP_404_NOT_FOUND)        
         
         try:
-            pass
-        except:
-            pass
+            checkout_session = stripe.checkout.Session.create(
+                customer_email=order.email,
+                payment_method_types=['card'],
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'usd',
+                            'product_data': {
+                                'name': order.full_name,
+                            },
+                            'unit_amount': int(order.total * 100)
+                        },
+                        'quantity': 1
+                    }
+                ],
+                mode='payment',
+                success_url=settings.FRONTEND_SITE_URL + '/payment-success/' +
+                order.oid + '?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=settings.FRONTEND_SITE_URL + '/payment-failed/'
+            )
+            print("checkout_session ====", checkout_session)
+            order.stripe_session_id = checkout_session.id
 
-
-
+            return redirect(checkout_session.url)
+        except stripe.error.StripeError as e:
+            return Response({"message": f"Something went wrong when trying to make payment. Error: {str(e)}"})
 
 # class CouponApplyAPIView(generics.CreateAPIView):
 #     serializer_class = api_serializers.CouponSerializer
