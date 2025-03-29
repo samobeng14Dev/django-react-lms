@@ -20,6 +20,7 @@ from rest_framework import generics
 import random
 from decimal import Decimal
 import stripe
+import requests
 
 stripe.api_key=settings.STRIPE_SECRET_KEY
 
@@ -399,6 +400,19 @@ class StripeCheckoutAPIView(generics.CreateAPIView):
         except stripe.error.StripeError as e:
             return Response({"message": f"Something went wrong when trying to make payment. Error: {str(e)}"})
 
+# function based view
+def get_access_token(client_id, secret_key):
+    token_url = "https://api.sandbox.paypal.com/v1/oauth2/token"
+    data = {'grant_type': 'client_credentials'}
+    auth = (client_id, secret_key)
+    response = requests.post(token_url, data=data, auth=auth)
+
+    if response.status_code == 200:
+        print("Access TOken ====", response.json()['access_token'])
+        return response.json()['access_token']
+    else:
+        raise Exception(
+            f"Failed to get access token from paypal {response.status_code}")
 # class CouponApplyAPIView(generics.CreateAPIView):
 #     serializer_class = api_serializers.CouponSerializer
 #     permission_classes = [AllowAny]
