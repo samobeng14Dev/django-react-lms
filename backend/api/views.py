@@ -425,9 +425,9 @@ class PaymentSuccessAPIView(generics.CreateAPIView):
         session_id = request.data['session_id']
         paypal_order_id = request.data['paypal_order_id']
 
-        # print("order_oid ====", order_oid)
-        # print("session_id ====", session_id)
-        # print("paypal_order_id ====", paypal_order_id)
+        print("order_oid ====", order_oid)
+        print("session_id ====", session_id)
+        print("paypal_order_id ====", paypal_order_id)
 
         order = api_models.CartOrder.objects.get(oid=order_oid)
         order_items = api_models.CartOrderItem.objects.filter(order=order)
