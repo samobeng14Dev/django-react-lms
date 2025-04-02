@@ -487,6 +487,15 @@ class PaymentSuccessAPIView(generics.CreateAPIView):
             else:
                 return Response({"message": "Payment Failed"})
             
+class SearchCourseAPIView(generics.ListAPIView):
+    serializer_class = api_serializers.CourseSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+       query=self.request.GET.get('query')
+       return api_models.Course.objects.filter(title__icontains=query, platform_status='published', teacher_course_status='published')
+
+            
 # class CouponApplyAPIView(generics.CreateAPIView):
 #     serializer_class = api_serializers.CouponSerializer
 #     permission_classes = [AllowAny]
