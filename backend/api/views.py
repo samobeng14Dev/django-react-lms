@@ -22,7 +22,7 @@ from decimal import Decimal
 import stripe
 import requests
 
-stripe.api_key=settings.STRIPE_SECRET_KEY
+stripe.api_key = settings.STRIPE_SECRET_KEY
 PAYPAL_CLIENT_ID = settings.PAYPAL_CLIENT_ID
 PAYPAL_SECRET_ID = settings.PAYPAL_SECRET_ID
 
@@ -110,100 +110,104 @@ class CategoryListAPIView(generics.ListAPIView):
 
 class CourseListAPView(generics.ListAPIView):
     queryset = api_models.Course.objects.filter(
-        platform_status='published', teacher_course_status='published')
+        platform_status='Published', teacher_course_status='Published')
     serializer_class = api_serializers.CourseSerializer
     permission_classes = [AllowAny]
 
+
 class CourseDetailAPIView(generics.RetrieveAPIView):
     queryset = api_models.Course.objects.filter(
-        platform_status='published', teacher_course_status='published')
+        platform_status='Published', teacher_course_status='Published')
     serializer_class = api_serializers.CourseSerializer
     permission_classes = [AllowAny]
 
     def get_object(self):
         slug = self.kwargs['slug']
-        course = api_models.Course.objects.get(slug=slug, platform_status='published', teacher_course_status='published')
+        course = api_models.Course.objects.get(
+            slug=slug, platform_status='Published', teacher_course_status='Published')
         return course
 
 
 class CartAPIView(generics.CreateAPIView):
     serializer_class = api_serializers.CartSerializer
-    queryset=api_models.Cart.objects.all()
+    queryset = api_models.Cart.objects.all()
     permission_classes = [AllowAny]
 
     def create(self, request: Request, *args, **kwargs):
-       
-       """This retrieves the necessary fields (course_id, user_id, price, country, and cart_id) from the incoming request payload."""
-       course_id=request.data["course_id"]
-       user_id=request.data["user_id"]
-       price=request.data["price"]
-       country_name=request.data["country"]
-       cart_id=request.data["cart_id"]
+        """This retrieves the necessary fields (course_id, user_id, price, country, and cart_id) from the incoming request payload."""
+        course_id = request.data["course_id"]
+        user_id = request.data["user_id"]
+        price = request.data["price"]
+        country_name = request.data["country"]
+        cart_id = request.data["cart_id"]
 
-       """This filters the Course model to get the first object matching the provided course_id. It returns None if no match is found."""
+        """This filters the Course model to get the first object matching the provided course_id. It returns None if no match is found."""
 
-       course=api_models.Course.objects.filter(id=course_id).first()
+        course = api_models.Course.objects.filter(id=course_id).first()
 
-       """This checks if the user_id is not undefined. If it’s not, it filters the User model to get the first object matching the provided user_id. It returns None if no match is found. If the user_id is undefined, it sets the user to None."""
+        """This checks if the user_id is not undefined. If it’s not, it filters the User model to get the first object matching the provided user_id. It returns None if no match is found. If the user_id is undefined, it sets the user to None."""
 
-       if user_id != "undefined":
-           user = User.objects.filter(id=user_id).first()
-       else:
-           user=None
+        if user_id != "undefined":
+            user = User.objects.filter(id=user_id).first()
+        else:
+            user = None
 
-       """This checks if the country exists in the Country model. If it does, it sets the country variable to the country name. If it doesn’t, it returns a 404 status code with a message."""
+        """This checks if the country exists in the Country model. If it does, it sets the country variable to the country name. If it doesn’t, it returns a 404 status code with a message."""
 
-       try:
-           country_object = api_models.Country.objects.filter(name=country_name).first()
-           country=country_object.name
+        try:
+            country_object = api_models.Country.objects.filter(
+                name=country_name).first()
+            country = country_object.name
 
-       except api_models.Country.DoesNotExist:
-           return Response({'message': 'Country does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        except api_models.Country.DoesNotExist:
+            return Response({'message': 'Country does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-       if country_object:
-           tax_rate=country_object.tax_rate/100
-       else: 
-           tax_rate=0
+        if country_object:
+            tax_rate = country_object.tax_rate/100
+        else:
+            tax_rate = 0
 
+            '''This checks if there’s an existing cart with the given cart_id and course.If a cart is found, it updates the cart. If no cart is found, it creates a new one.'''
 
+        cart = api_models.Cart.objects.filter(
+            cart_id=cart_id, course=course).first()
 
-           '''This checks if there’s an existing cart with the given cart_id and course.If a cart is found, it updates the cart. If no cart is found, it creates a new one.'''
+        if cart:
+            cart.course = course
+            cart.user = user
+            cart.price = price
+            cart.tax_fee = Decimal(price)*Decimal(tax_rate)
+            cart.country = country
+            cart.cart_id = cart_id
+            cart.total = Decimal(cart.price)+Decimal(cart.tax_fee)
+            cart.save()
 
-       cart=api_models.Cart.objects.filter(cart_id=cart_id, course=course).first()  
+            return Response({'message': 'Cart updated successfully'}, status=status.HTTP_200_OK)
+        else:
+            cart = api_models.Cart.objects.create(course=course, user=user, price=price, tax_fee=Decimal(
+                price)*Decimal(tax_rate), country=country, cart_id=cart_id, total=Decimal(price)+Decimal(price)*Decimal(tax_rate))
 
-       if cart:
-           cart.course=course
-           cart.user=user
-           cart.price=price
-           cart.tax_fee=Decimal(price)*Decimal(tax_rate)
-           cart.country=country      
-           cart.cart_id=cart_id
-           cart.total=Decimal(cart.price)+Decimal(cart.tax_fee)  
-           cart.save()
+            return Response({'message': 'Cart created successfully'}, status=status.HTTP_201_CREATED)
 
-           return Response({'message': 'Cart updated successfully'}, status=status.HTTP_200_OK)
-       else:
-           cart=api_models.Cart.objects.create(course=course, user=user, price=price, tax_fee=Decimal(price)*Decimal(tax_rate), country=country, cart_id=cart_id, total=Decimal(price)+Decimal(price)*Decimal(tax_rate))
-
-           return Response({'message': 'Cart created successfully'}, status=status.HTTP_201_CREATED)
 
 class CartListAPIView(generics.ListAPIView):
     serializer_class = api_serializers.CartSerializer
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-       cart_id=self.kwargs['cart_id']  
-       queryset = api_models.Cart.objects.filter(cart_id=cart_id)
-       return queryset
+        cart_id = self.kwargs['cart_id']
+        queryset = api_models.Cart.objects.filter(cart_id=cart_id)
+        return queryset
+
 
 class CartItemDeleteAPIView(generics.DestroyAPIView):
-    
+
     serializer_class = api_serializers.CartSerializer
     permission_classes = [AllowAny]
 
     def get_object(self):
-        cart_id=self.kwargs['cart_id']  
-        item_id=self.kwargs['item_id']
+        cart_id = self.kwargs['cart_id']
+        item_id = self.kwargs['item_id']
 
         return api_models.Cart.objects.filter(cart_id=cart_id, id=item_id).first()
 
@@ -294,11 +298,12 @@ class CreateOrderAPIView(generics.CreateAPIView):
         # Return success response
         return Response({'message': 'Order created successfully'}, status=status.HTTP_201_CREATED)
 
+
 class CheckoutAPIView(generics.RetrieveAPIView):
-    serializer_class=api_serializers.CartOrderSerializer
-    queryset=api_models.CartOrder.objects.all()
-    permission_classes=[AllowAny]
-    lookup_field='oid' 
+    serializer_class = api_serializers.CartOrderSerializer
+    queryset = api_models.CartOrder.objects.all()
+    permission_classes = [AllowAny]
+    lookup_field = 'oid'
 
 
 class CouponApplyAPIView(generics.CreateAPIView):
@@ -363,17 +368,17 @@ class CouponApplyAPIView(generics.CreateAPIView):
 
 
 class StripeCheckoutAPIView(generics.CreateAPIView):
-    serializer_class=api_serializers.CartOrderSerializer
-    permission_classes=[AllowAny]
+    serializer_class = api_serializers.CartOrderSerializer
+    permission_classes = [AllowAny]
 
-    def create(self,request,*args,**kwargs):
+    def create(self, request, *args, **kwargs):
 
-        order_id=self.kwargs['order_id']
-        order=api_models.CartOrder.objects.get(oid=order_id)
+        order_id = self.kwargs['order_id']
+        order = api_models.CartOrder.objects.get(oid=order_id)
 
         if not order:
-            return Response({'message': 'order not found'},status=status.HTTP_404_NOT_FOUND)        
-        
+            return Response({'message': 'order not found'}, status=status.HTTP_404_NOT_FOUND)
+
         try:
             checkout_session = stripe.checkout.Session.create(
                 customer_email=order.email,
@@ -403,6 +408,8 @@ class StripeCheckoutAPIView(generics.CreateAPIView):
             return Response({"message": f"Something went wrong when trying to make payment. Error: {str(e)}"})
 
 # function based view
+
+
 def get_access_token(client_id, secret_key):
     token_url = "https://api.sandbox.paypal.com/v1/oauth2/token"
     data = {'grant_type': 'client_credentials'}
@@ -486,16 +493,17 @@ class PaymentSuccessAPIView(generics.CreateAPIView):
                     return Response({"message": "Already Paid"})
             else:
                 return Response({"message": "Payment Failed"})
-            
+
+
 class SearchCourseAPIView(generics.ListAPIView):
     serializer_class = api_serializers.CourseSerializer
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-       query=self.request.GET.get('query')
-       return api_models.Course.objects.filter(title__icontains=query, platform_status='published', teacher_course_status='published')
+        query = self.request.GET.get('query')
+        return api_models.Course.objects.filter(title__icontains=query, platform_status='Published', teacher_course_status='Published')
 
-            
+
 # class CouponApplyAPIView(generics.CreateAPIView):
 #     serializer_class = api_serializers.CouponSerializer
 #     permission_classes = [AllowAny]
@@ -533,9 +541,6 @@ class SearchCourseAPIView(generics.ListAPIView):
 #                     return Response({"message": "Coupon Already Applied", "icon": "warning"}, status=status.HTTP_200_OK)
 #         else:
 #             return Response({"message": "Coupon Not Found", "icon": "error"}, status=status.HTTP_404_NOT_FOUND)
-    
-
-
 
 
 # class CreateOrderAPIView(generics.CreateAPIView):
@@ -551,14 +556,14 @@ class SearchCourseAPIView(generics.ListAPIView):
 #         user_id=request.data['user_id']
 
 #         if user_id != 0 and user_id != "undefined":
-#             user=User.objects.filter(id=user_id).first()    
+#             user=User.objects.filter(id=user_id).first()
 #         else:
-#             user=None    
+#             user=None
 
 #         cart_items=api_models.Cart.objects.filter(cart_id=cart_id)
 #         total_price=Decimal(0.00)
 #         total_tax=Decimal(0.00)
-#         total_initial_total=Decimal(0.00)    
+#         total_initial_total=Decimal(0.00)
 #         total_total=Decimal(0.00)
 
 #         order=api_models.CartOrder.objects.create(
@@ -578,7 +583,7 @@ class SearchCourseAPIView(generics.ListAPIView):
 #                 initial_total=c.total,
 #                 teacher=c.course.teacher
 #             )
-            
+
 #             total_price+=Decimal(c.price)
 #             total_tax+=Decimal(c.tax_fee)
 #             total_initial_total+=Decimal(c.total)
@@ -590,12 +595,10 @@ class SearchCourseAPIView(generics.ListAPIView):
 #             order.tax_fee=total_tax
 #             order.initial_total=total_initial_total
 #             order.total=total_total
-#             order.save()    
+#             order.save()
 
 #             return Response({'message':'Order created successfully'},status=status.HTTP_201_CREATED)
-    
 
-    
 
 # class CartStatsAPIView(generics.RetrieveAPIView):
 #     serializer_class=api_serializers.CartSerializer
@@ -606,7 +609,7 @@ class SearchCourseAPIView(generics.ListAPIView):
 #        cart_id = self.kwargs['cart_id']
 #        queryset = api_models.Cart.objects.filter(cart_id=cart_id)
 #        return queryset
-    
+
 #     def get(self,requests,*args,**kwargs):
 #         query_set=self.get_queryset()
 
@@ -623,7 +626,7 @@ class SearchCourseAPIView(generics.ListAPIView):
 #             'total_price':total_price,
 #             'total_tax':total_tax,
 #             'total_total':total_total
-#         }   
+#         }
 #         return Response(data,status=status.HTTP_200_OK)
 
 #     def calculate_price(self,cart_item):
@@ -632,5 +635,3 @@ class SearchCourseAPIView(generics.ListAPIView):
 #         return cart_item.tax_fee
 #     def calculate_total(self,cart_item):
 #         return cart_item.total
-
-    

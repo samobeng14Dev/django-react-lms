@@ -130,7 +130,7 @@ export const getRefreshedToken = async () => {
     }
 
     try {
-        const response = await apiInstance.post("token/refresh/", { refresh: refresh_token });
+        const response = await apiInstance.post("user/token/refresh/", { refresh: refresh_token });
 
         if (response.data.access && response.data.refresh) {
             await setAuthUser(response.data.access, response.data.refresh);
