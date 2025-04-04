@@ -19,7 +19,7 @@ urlpatterns = [
          name='category_list_create'),
     path('core/course-list/', api_views.CourseListAPView.as_view(),
          name='course_list_create'),
-    path('core/course/<slug>/',
+    path('core/course-detail/<slug>/',
          api_views.CourseDetailAPIView.as_view(), name='course_detail'),
     path('course/cart/', api_views.CartAPIView.as_view(), name='cart'),  
     path('course/cart-list/<cart_id>', api_views.CartListAPIView.as_view(), name='cart_list'), 

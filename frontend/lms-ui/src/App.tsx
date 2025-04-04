@@ -8,6 +8,7 @@ import Logout from "./views/auth/Logout";
 import ForgotPassword from "./views/auth/ForgotPassword";
 import CreateNewPassword from "./views/auth/CreateNewPassword";
 import Index from "./views/base/Index";
+import CourseDetail from "./views/base/CourseDetail";
 
 
 const App: React.FC = () => {
@@ -22,7 +23,8 @@ const App: React.FC = () => {
                     <Route path="/create-new-password/" element={<CreateNewPassword />} /> 
                     
                     {/* Base Route*/}
-                    <Route path="" element={<Index/>} />
+                    <Route path="" element={<Index />} />
+                    <Route path="/course-detail/:slug" element={<CourseDetail />} />
                 </Routes>
             </MainWrapper>
         </BrowserRouter>
