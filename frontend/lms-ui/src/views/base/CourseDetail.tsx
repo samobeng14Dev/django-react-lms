@@ -5,7 +5,7 @@ import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
 import { Course } from "../../apiStructure/modelTypes";
 import { useState, useEffect } from "react";
-import moment from 'moment'
+import moment from "moment";
 
 function CourseDetail() {
 	const [course, setCourse] = useState<Course | null>(null);
@@ -62,7 +62,7 @@ function CourseDetail() {
 										<ul className='list-inline mb-0'>
 											<li className='list-inline-item h6 me-3 mb-1 mb-sm-0'>
 												<i className='fas fa-star text-warning me-2' />
-												{course?.average_rating}/(5) 
+												{course?.average_rating}/(5)
 											</li>
 											<li className='list-inline-item h6 me-3 mb-1 mb-sm-0'>
 												<i className='fas fa-user-graduate text-orange me-2' />
@@ -208,106 +208,12 @@ function CourseDetail() {
 														role='tabpanel'
 														aria-labelledby='course-pills-tab-1'>
 														<h5 className='mb-3'>Course Description</h5>
-														<p className='mb-3'>
-															Welcome to the
-															<strong>
-																Digital Marketing Ultimate Course Bundle - 12
-																Courses in 1 (Over 36 hours of content)
-															</strong>
-														</p>
-														<p className='mb-3'>
-															In this practical hands-on training, you’re going
-															to learn to become a digital marketing expert with
-															this
-															<strong>
-																ultimate course bundle that includes 12 digital
-																marketing courses in 1!
-															</strong>
-														</p>
-														<p className='mb-3'>
-															If you wish to find out the skills that should be
-															covered in a basic digital marketing course
-															syllabus in India or anywhere around the world,
-															then reading this blog will help. Before we delve
-															into the advanced
-															<strong>
-																<a
-																	href='#'
-																	className='text-reset text-decoration-underline'>
-																	digital marketing course
-																</a>
-															</strong>
-															syllabus, let’s look at the scope of digital
-															marketing and what the future holds.
-														</p>
-														<p className='mb-0'>
-															We focus a great deal on the understanding of
-															behavioral psychology and influence triggers which
-															are crucial for becoming a well rounded Digital
-															Marketer. We understand that theory is important
-															to build a solid foundation, we understand that
-															theory alone isn’t going to get the job done so
-															that’s why this course is packed with practical
-															hands-on examples that you can follow step by
-															step.
-														</p>
-														{/* List content */}
-														<h5 className='mt-4'>What you’ll learn</h5>
-														<ul className='list-group list-group-borderless mb-3'>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																Digital marketing course introduction
-															</li>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																Customer Life cycle
-															</li>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																What is Search engine optimization(SEO)
-															</li>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																Facebook ADS
-															</li>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																Facebook Messenger Chatbot
-															</li>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																Search engine optimization tools
-															</li>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																Why SEO
-															</li>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																URL Structure
-															</li>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																Featured Snippet
-															</li>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																SEO tips and tricks
-															</li>
-															<li className='list-group-item h6 fw-light d-flex mb-0'>
-																<i className='fas fa-check-circle text-success me-2' />
-																Google tag manager
-															</li>
-														</ul>
-														<p className='mb-0'>
-															As it so contrasted oh estimating instrument. Size
-															like body someone had. Are conduct viewing boy
-															minutes warrant the expense? Tolerably behavior
-															may admit daughters offending her ask own. Praise
-															effect wishes change way and any wanted. Lively
-															use looked latter regard had. Do he it part more
-															last in.
-														</p>
+														<p
+															className='mb-3'
+															dangerouslySetInnerHTML={{
+																__html: `${course?.description}`,
+															}}></p>
+
 														{/* Course detail END */}
 													</div>
 													{/* Content END */}
@@ -322,185 +228,69 @@ function CourseDetail() {
 															className='accordion accordion-icon accordion-bg-light'
 															id='accordionExample2'>
 															{/* Item */}
-															<div className='accordion-item mb-3'>
-																<h6
-																	className='accordion-header font-base'
-																	id='heading-1'>
-																	<button
-																		className='accordion-button fw-bold rounded d-sm-flex d-inline-block collapsed'
-																		type='button'
-																		data-bs-toggle='collapse'
-																		data-bs-target='#collapse-1'
-																		aria-expanded='true'
-																		aria-controls='collapse-1'>
-																		Introduction of Digital Marketing
-																		<span className='small ms-0 ms-sm-2'>
-																			(3 Lectures)
-																		</span>
-																	</button>
-																</h6>
-																<div
-																	id='collapse-1'
-																	className='accordion-collapse collapse show'
-																	aria-labelledby='heading-1'
-																	data-bs-parent='#accordionExample2'>
-																	<div className='accordion-body mt-3'>
-																		{/* Course lecture */}
-																		<div className='d-flex justify-content-between align-items-center'>
-																			<div className='position-relative d-flex align-items-center'>
-																				<a
-																					href='#'
-																					className='btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static'>
-																					<i className='fas fa-play me-0' />
-																				</a>
-																				<span className='d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px'>
-																					Introduction
-																				</span>
+															{course?.curriculum?.map((c, index) => {
+																return (
+																	<div
+																		className='accordion-item mb-3'
+																		key={index}>
+																		<h6
+																			className='accordion-header font-base'
+																			id='heading-1'>
+																			<button
+																				className='accordion-button fw-bold rounded d-sm-flex d-inline-block collapsed'
+																				type='button'
+																				data-bs-toggle={`collapse`}
+																				data-bs-target={`#collapse-${c.variant_id}`}
+																				aria-expanded='true'
+																				aria-controls={`collapse-${c.variant_id}`}>
+																				{c.title}
+																				<span className='small ms-0 ms-sm-2'></span>
+																			</button>
+																		</h6>
+																		<div
+																			id={`collapse-${c.variant_id}`}
+																			className='accordion-collapse collapse show'
+																			aria-labelledby='heading-1'
+																			data-bs-parent='#accordionExample2'>
+																			<div className='accordion-body mt-3'>
+																				{/* Course lecture */}
+																				{c.variant_items?.map(
+																					(l: any, index: number) => {
+																						return (
+																							<div
+																								className='d-flex justify-content-between align-items-center'
+																								key={index}>
+																								<div className='position-relative d-flex align-items-center'>
+																									<a
+																										href='#'
+																										className='btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static'>
+																										{l.preview === true ? (
+																											<i className='fas fa-play me-0' />
+																										) : (
+																											<i className='fas fa-lock me-0' />
+																										)}
+																									</a>
+																									<span className='d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px'>
+																										{l.title}
+																									</span>
+																								</div>
+
+																								<p className='mb-0'>
+																									{l.content_duration}
+																								</p>
+																							</div>
+																						);
+																					}
+																				)}
+																				<hr /> {/* Divider */}
+																				{/* Course lecture */}
+																				<hr /> {/* Divider */}
+																				{/* Course lecture */}
 																			</div>
-																			<p className='mb-0'>2m 10s</p>
-																		</div>
-																		<hr /> {/* Divider */}
-																		{/* Course lecture */}
-																		<div className='d-flex justify-content-between align-items-center'>
-																			<div className='position-relative d-flex align-items-center'>
-																				<a
-																					href='#'
-																					className='btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static'>
-																					<i className='fas fa-play me-0' />
-																				</a>
-																				<span className='d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px'>
-																					What is Digital Marketing What is
-																					Digital Marketing
-																				</span>
-																			</div>
-																			<p className='mb-0 text-truncate'>
-																				15m 10s
-																			</p>
-																		</div>
-																		<hr /> {/* Divider */}
-																		{/* Course lecture */}
-																		<div className='d-flex justify-content-between align-items-center'>
-																			<div className='position-relative d-flex align-items-center'>
-																				<a
-																					href='#'
-																					className='btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static'>
-																					<i className='fas fa-lock me-0' />
-																				</a>
-																				<span className='d-inline-block text-truncate text-muted ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px'>
-																					Type of Digital Marketing
-																				</span>
-																			</div>
-																			<p className='mb-0'>18m 10s</p>
 																		</div>
 																	</div>
-																</div>
-															</div>
-															{/* Item */}
-															<div className='accordion-item mb-3'>
-																<h6
-																	className='accordion-header font-base'
-																	id='heading-2'>
-																	<button
-																		className='accordion-button fw-bold collapsed rounded d-sm-flex d-inline-block'
-																		type='button'
-																		data-bs-toggle='collapse'
-																		data-bs-target='#collapse-2'
-																		aria-expanded='false'
-																		aria-controls='collapse-2'>
-																		Customer Life cycle
-																		<span className='small ms-0 ms-sm-2'>
-																			(4 Lectures)
-																		</span>
-																	</button>
-																</h6>
-																<div
-																	id='collapse-2'
-																	className='accordion-collapse collapse'
-																	aria-labelledby='heading-2'
-																	data-bs-parent='#accordionExample2'>
-																	{/* Accordion body START */}
-																	<div className='accordion-body mt-3'>
-																		{/* Course lecture */}
-																		<div className='d-flex justify-content-between align-items-center'>
-																			<div className='position-relative d-flex align-items-center'>
-																				<a
-																					href='#'
-																					className='btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static'>
-																					<i className='fas fa-play me-0' />
-																				</a>
-																				<span className='d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px'>
-																					What is Digital Marketing
-																				</span>
-																			</div>
-																			<p className='mb-0'>11m 20s</p>
-																		</div>
-																		<hr /> {/* Divider */}
-																		{/* Course lecture */}
-																		<div className='d-flex justify-content-between align-items-center'>
-																			<div className='position-relative d-flex align-items-center'>
-																				<a
-																					href='#'
-																					className='btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static'>
-																					<i className='fas fa-play me-0' />
-																				</a>
-																				<span className='d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px'>
-																					15 Tips for Writing Magnetic Headlines
-																				</span>
-																			</div>
-																			<p className='mb-0 text-truncate'>
-																				25m 20s
-																			</p>
-																		</div>
-																		<hr /> {/* Divider */}
-																		{/* Course lecture */}
-																		<div className='d-flex justify-content-between align-items-center'>
-																			<div className='position-relative d-flex align-items-center'>
-																				<a
-																					href='#'
-																					className='btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static'>
-																					<i className='fas fa-play me-0' />
-																				</a>
-																				<span className='d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px'>
-																					How to Write Like Your Customers Talk
-																				</span>
-																			</div>
-																			<p className='mb-0'>11m 30s</p>
-																		</div>
-																		<hr /> {/* Divider */}
-																		{/* Course lecture */}
-																		<div className='d-flex justify-content-between align-items-center'>
-																			<div className='position-relative d-flex align-items-center'>
-																				<div>
-																					<a
-																						href='#'
-																						className='btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static'
-																						data-bs-toggle='modal'
-																						data-bs-target='#exampleModal'>
-																						<i className='fas fa-play me-0' />
-																					</a>
-																				</div>
-																				<div className='row g-sm-0 align-items-center'>
-																					<div className='col-sm-6'>
-																						<span className='d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-md-400px'>
-																							How to Flip Features Into Benefits
-																						</span>
-																					</div>
-																					<div className='col-sm-6'>
-																						<span className='badge text-bg-orange ms-2 ms-md-0'>
-																							<i className='fas fa-lock fa-fw me-1' />
-																							Premium
-																						</span>
-																					</div>
-																				</div>
-																			</div>
-																			<p className='mb-0 d-inline-block text-truncate w-70px w-sm-60px'>
-																				35m 30s
-																			</p>
-																		</div>
-																	</div>
-																	{/* Accordion body END */}
-																</div>
-															</div>
+																);
+															})}
 														</div>
 														{/* Course accordion END */}
 													</div>
@@ -517,7 +307,7 @@ function CourseDetail() {
 																<div className='col-md-5'>
 																	{/* Image */}
 																	<img
-																		src='https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg'
+																		src={course?.teacher?.image}
 																		className='img-fluid rounded-3'
 																		alt='instructor-image'
 																	/>
@@ -527,30 +317,34 @@ function CourseDetail() {
 																	<div className='card-body'>
 																		{/* Title */}
 																		<h3 className='card-title mb-0'>
-																			Destiny Franks
+																			{course?.teacher?.full_name}
 																		</h3>
 																		<p className='mb-2'>
-																			Instructor of Web/Mobile App Development
+																			{course?.teacher.bio}
 																		</p>
 																		{/* Social button */}
 																		<ul className='list-inline mb-3'>
 																			<li className='list-inline-item me-3'>
 																				<a
-																					href='#'
+																					href={course?.teacher?.twitter || "#"}
 																					className='fs-5 text-twitter'>
 																					<i className='fab fa-twitter-square' />
 																				</a>
 																			</li>
 																			<li className='list-inline-item me-3'>
 																				<a
-																					href='#'
+																					href={
+																						course?.teacher?.facebook || "#"
+																					}
 																					className='fs-5 text-facebook'>
 																					<i className='fab fa-facebook-square' />
 																				</a>
 																			</li>
 																			<li className='list-inline-item me-3'>
 																				<a
-																					href='#'
+																					href={
+																						course?.teacher?.linkedin || "#"
+																					}
 																					className='fs-5 text-linkedin'>
 																					<i className='fab fa-linkedin' />
 																				</a>
@@ -564,24 +358,9 @@ function CourseDetail() {
 														{/* Instructor info */}
 														<h5 className='mb-3'>About Instructor</h5>
 														<p className='mb-3'>
-															Fulfilled direction use continual set him
-															propriety continued. Saw met applauded favorite
-															deficient engrossed concealed and her. Concluded
-															boy perpetual old supposing. Farther related bed
-															and passage comfort civilly. Dashboard see
-															frankness objection abilities. As hastened oh
-															produced prospect formerly up am. Placing forming
-															nay looking old married few has. Margaret disposed
-															of add screened rendered six say his striking
-															confined.
+															{course?.teacher?.about}
 														</p>
-														<p className='mb-3'>
-															As it so contrasted oh estimating instrument. Size
-															like body someone had. Are conduct viewing boy
-															minutes warrant the expense? Tolerably behavior
-															may admit daughters offending her ask own. Praise
-															effect wishes change way and any wanted.
-														</p>
+													
 													</div>
 													<div
 														className='tab-pane fade'
@@ -1335,7 +1114,7 @@ function CourseDetail() {
 												<div className='card shadow p-2 mb-4 z-index-9'>
 													<div className='overflow-hidden rounded-3'>
 														<img
-															src='https://geeksui.codescandy.com/geeks/assets/images/course/course-angular.jpg'
+															src={course?.image}
 															className='card-img'
 															alt='course image'
 														/>
@@ -1405,7 +1184,7 @@ function CourseDetail() {
 															{/* Price and time */}
 															<div>
 																<div className='d-flex align-items-center'>
-																	<h3 className='fw-bold mb-0 me-2'>$350</h3>
+																		<h3 className='fw-bold mb-0 me-2'>${ course?.price}</h3>
 																</div>
 															</div>
 															{/* Share button with dropdown */}
