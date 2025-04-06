@@ -62,3 +62,11 @@ export interface Course {
   rating_count: number;
   reviews: any[];
 }
+export interface Cart {
+	price: string; // decimal string
+	tax_fee: string; // decimal string
+	total: string; // decimal string
+	country?: string | null; // optional and nullable
+	cart_id: string;
+	date: string; // ISO 8601 date-time string
+}

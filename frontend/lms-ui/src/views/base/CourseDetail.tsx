@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
-import { Course } from "../../apiStructure/modelTypes";
+import { Course, Cart } from "../../apiStructure/modelTypes";
 import { useState, useEffect } from "react";
 import moment from "moment";
 
@@ -31,6 +31,16 @@ function CourseDetail() {
 	useEffect(() => {
 		fetchCourse();
 	}, []);
+
+	const addToCart= async (
+		courseId: string,
+		userId: string,
+		price: string,
+		country: string | null,
+		cartId: string
+	) => {
+		const formData = new FormData();
+	};
 
 	return (
 		<>
