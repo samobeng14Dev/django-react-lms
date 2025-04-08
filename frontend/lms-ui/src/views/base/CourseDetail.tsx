@@ -40,6 +40,12 @@ function CourseDetail() {
 		cartId: string
 	) => {
 		const formData = new FormData();
+		
+        formData.append("course_id", courseId);
+				formData.append("user_id", userId);
+				formData.append("price", price);
+				formData.append("country_name", country ?? "");
+				formData.append("cart_id", cartId); 
 	};
 
 	return (
