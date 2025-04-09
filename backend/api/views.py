@@ -135,11 +135,11 @@ class CartAPIView(generics.CreateAPIView):
 
     def create(self, request: Request, *args, **kwargs):
         """This retrieves the necessary fields (course_id, user_id, price, country, and cart_id) from the incoming request payload."""
-        course_id = request.data["course_id"]
-        user_id = request.data["user_id"]
-        price = request.data["price"]
-        country_name = request.data["country"]
-        cart_id = request.data["cart_id"]
+        course_id = request.data.get("course_id")
+        user_id = request.data.get("user_id")
+        price = request.data.get("price")
+        country_name = request.data.get("country_name")
+        cart_id = request.data.get("cart_id")
 
         """This filters the Course model to get the first object matching the provided course_id. It returns None if no match is found."""
 

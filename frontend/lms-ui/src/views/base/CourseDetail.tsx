@@ -10,6 +10,7 @@ import moment from "moment";
 function CourseDetail() {
 	const [course, setCourse] = useState<Course | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [addToCartBtn, setAddToCartBtn]=useState("Add To Cart")
 	const param = useParams();
 	// console.log('print slug',param);
 
@@ -21,7 +22,7 @@ function CourseDetail() {
 			);
 
 			setCourse(response.data);
-			// console.log(response.data);
+			console.log(response.data);
 
 			setLoading(false);
 		} catch (error) {
@@ -32,20 +33,34 @@ function CourseDetail() {
 		fetchCourse();
 	}, []);
 
-	const addToCart= async (
-		courseId: string,
-		userId: string,
-		price: string,
-		country: string | null,
-		cartId: string
+	const addToCart = async (
+		courseId: any,
+		userId:any,
+		price: any,
+		country: any,
+		cartId: any
 	) => {
+		setAddToCartBtn("Adding To Cart")
 		const formData = new FormData();
-		
-        formData.append("course_id", courseId);
-				formData.append("user_id", userId);
-				formData.append("price", price);
-				formData.append("country_name", country ?? "");
-				formData.append("cart_id", cartId); 
+
+		formData.append("course_id", courseId);
+		formData.append("user_id", userId);
+		formData.append("price", price);
+		formData.append("country_name", country ?? "");
+		formData.append("cart_id", cartId);
+
+		try {
+			await useAxios()
+				.post("/course/cart/", formData)
+				.then((res) => {
+					console.log(res.data);
+					setAddToCartBtn("Added To Cart")
+				});
+		} catch (error) {
+			console.log(error);
+			
+			setAddToCartBtn("Add To Cart");
+		}
 	};
 
 	return (
@@ -373,10 +388,7 @@ function CourseDetail() {
 														{/* Card END */}
 														{/* Instructor info */}
 														<h5 className='mb-3'>About Instructor</h5>
-														<p className='mb-3'>
-															{course?.teacher?.about}
-														</p>
-													
+														<p className='mb-3'>{course?.teacher?.about}</p>
 													</div>
 													<div
 														className='tab-pane fade'
@@ -1200,7 +1212,9 @@ function CourseDetail() {
 															{/* Price and time */}
 															<div>
 																<div className='d-flex align-items-center'>
-																		<h3 className='fw-bold mb-0 me-2'>${ course?.price}</h3>
+																	<h3 className='fw-bold mb-0 me-2'>
+																		${course?.price}
+																	</h3>
 																</div>
 															</div>
 															{/* Share button with dropdown */}
@@ -1256,18 +1270,59 @@ function CourseDetail() {
 														</div>
 														{/* Buttons */}
 														<div className='mt-3 d-sm-flex justify-content-sm-between '>
-															<Link
-																to='/cart/'
-																className='btn btn-primary mb-0 w-100 me-2'>
-																<i className='fas fa-shopping-cart'></i> Add To
-																Cart
-															</Link>
-															<Link
-																to='/cart/'
-																className='btn btn-success mb-0 w-100'>
-																Enroll Now{" "}
-																<i className='fas fa-arrow-right'></i>
-															</Link>
+															{addToCartBtn === "Add To Cart" && (
+																<button
+																	type='button'
+																	className='btn btn-primary mb-0 w-100 me-2 mt-3'
+																	onClick={() =>
+																		addToCart(
+																			course?.id,
+																			'1',
+																			course?.price,
+																			"Ghana",
+																			"3333333"
+																		)
+																	}>
+																	<i className='fas fa-shopping-cart'></i> Add
+																	To Cart
+																</button>
+															)}
+
+															{addToCartBtn === "Added To Cart" && (
+																<button
+																	type='button'
+																	className='btn btn-primary mb-0 w-100 me-2 mt-3'
+																	onClick={() =>
+																		addToCart(
+																			course?.id,
+																			1,
+																			course?.price,
+																			"Ghana",
+																			"8325347"
+																		)
+																	}>
+																	<i className='fas fa-check-circle'></i> Added
+																	To Cart
+																</button>
+															)}
+
+															{addToCartBtn === "Adding To Cart" && (
+																<button
+																	type='button'
+																	className='btn btn-primary mb-0 w-100 me-2 mt-3'
+																	onClick={() =>
+																		addToCart(
+																			course?.id,
+																			1,
+																			course?.price,
+																			"Ghana",
+																			"8325347"
+																		)
+																	}>
+																	<i className='fas fa-spinner fa-spin'></i>{" "}
+																	Adding To Cart
+																</button>
+															)}
 														</div>
 													</div>
 												</div>
