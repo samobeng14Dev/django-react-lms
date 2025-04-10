@@ -3,7 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
-import { Course, Cart } from "../../apiStructure/modelTypes";
+import { Course, } from "../../apiStructure/modelTypes";
+import CartID from "../plugin/CartID";
 import { useState, useEffect } from "react";
 import moment from "moment";
 
@@ -1298,7 +1299,7 @@ function CourseDetail() {
 																			1,
 																			course?.price,
 																			"Ghana",
-																			"8325347"
+																			CartID()
 																		)
 																	}>
 																	<i className='fas fa-check-circle'></i> Added
