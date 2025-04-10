@@ -5,6 +5,7 @@ import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
 import { Course, } from "../../apiStructure/modelTypes";
 import CartID from "../plugin/CartID";
+import UserData from "../plugin/UserData";
 import { useState, useEffect } from "react";
 import moment from "moment";
 import useCurrentAddress from "../plugin/UserCountry";
@@ -18,6 +19,7 @@ function CourseDetail() {
 	const currentAddress = useCurrentAddress()
 
 	const country = currentAddress?.country ?? "Ghana";
+	const userId = (UserData() as { user_id: string }).user_id;
 	// console.log('print slug',param);
 	
 
@@ -1284,10 +1286,10 @@ function CourseDetail() {
 																	onClick={() =>
 																		addToCart(
 																			course?.id,
-																			'1',
+																			userId,
 																			course?.price,
 																			country,
-																			"3333333"
+																			CartID
 																		)
 																	}>
 																	<i className='fas fa-shopping-cart'></i> Add
@@ -1302,9 +1304,9 @@ function CourseDetail() {
 																	onClick={() =>
 																		addToCart(
 																			course?.id,
-																			1,
+																			userId,
 																			course?.price,
-																			"Ghana",
+																			country,
 																			CartID()
 																		)
 																	}>
@@ -1320,10 +1322,10 @@ function CourseDetail() {
 																	onClick={() =>
 																		addToCart(
 																			course?.id,
-																			1,
+																			userId,
 																			course?.price,
-																			"Ghana",
-																			"8325347"
+																			country,
+																			CartID
 																		)
 																	}>
 																	<i className='fas fa-spinner fa-spin'></i>{" "}
