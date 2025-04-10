@@ -7,13 +7,19 @@ import { Course, } from "../../apiStructure/modelTypes";
 import CartID from "../plugin/CartID";
 import { useState, useEffect } from "react";
 import moment from "moment";
+import useCurrentAddress from "../plugin/UserCountry";
 
 function CourseDetail() {
 	const [course, setCourse] = useState<Course | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [addToCartBtn, setAddToCartBtn]=useState("Add To Cart")
 	const param = useParams();
+	
+	const currentAddress = useCurrentAddress()
+
+	const country = currentAddress?.country ?? "Ghana";
 	// console.log('print slug',param);
+	
 
 	const fetchCourse = async () => {
 		const apiInstance = useAxios();
@@ -1280,7 +1286,7 @@ function CourseDetail() {
 																			course?.id,
 																			'1',
 																			course?.price,
-																			"Ghana",
+																			country,
 																			"3333333"
 																		)
 																	}>
