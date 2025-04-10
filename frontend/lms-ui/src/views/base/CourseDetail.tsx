@@ -4,11 +4,12 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
 import { Course, } from "../../apiStructure/modelTypes";
+import useCurrentAddress from "../plugin/UserCountry";
 import CartID from "../plugin/CartID";
 import UserData from "../plugin/UserData";
 import { useState, useEffect } from "react";
 import moment from "moment";
-import useCurrentAddress from "../plugin/UserCountry";
+import Toast  from "../plugin/Toast";
 
 function CourseDetail() {
 	const [course, setCourse] = useState<Course | null>(null);
@@ -64,11 +65,18 @@ function CourseDetail() {
 				.then((res) => {
 					console.log(res.data);
 					setAddToCartBtn("Added To Cart")
+					Toast().fire({
+						title: "Added To Cart",
+						icon:"success"
+						
+					})
+					
 				});
 		} catch (error) {
 			console.log(error);
 			
 			setAddToCartBtn("Add To Cart");
+			
 		}
 	};
 
