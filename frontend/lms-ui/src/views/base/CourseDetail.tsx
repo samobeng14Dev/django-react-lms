@@ -32,7 +32,7 @@ function CourseDetail() {
 			);
 
 			setCourse(response.data);
-			console.log(response.data);
+			// console.log(response.data);
 
 			setLoading(false);
 		} catch (error) {
@@ -1297,7 +1297,7 @@ function CourseDetail() {
 																			userId,
 																			course?.price,
 																			country,
-																			CartID
+																			CartID()
 																		)
 																	}>
 																	<i className='fas fa-shopping-cart'></i> Add
@@ -1333,7 +1333,7 @@ function CourseDetail() {
 																			userId,
 																			course?.price,
 																			country,
-																			CartID
+																			CartID()
 																		)
 																	}>
 																	<i className='fas fa-spinner fa-spin'></i>{" "}

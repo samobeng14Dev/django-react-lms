@@ -1,23 +1,18 @@
-function CartID() {
-    const generateRandomString = () => {
-        const length = 6
-        const characters = '1234567890'
-        let randomString = ""
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * characters.length)
-            randomString += characters.charAt(randomIndex)
-        }
-        localStorage.setItem("randomString", randomString)
-        // return randomString
+function CartID(): string {
+	const length = 6;
+	const characters = '1234567890';
+	let randomString = localStorage.getItem("randomString");
 
-        const existingRandomString = localStorage.getItem("randomString")
-        if (!existingRandomString) {
-            generateRandomString()
-        } else {
-           //pass
-        }
-        return existingRandomString
-       
-    }
+	if (!randomString) {
+		randomString = "";
+		for (let i = 0; i < length; i++) {
+			const randomIndex = Math.floor(Math.random() * characters.length);
+			randomString += characters.charAt(randomIndex);
+		}
+		localStorage.setItem("randomString", randomString);
+	}
+
+	return randomString;
 }
-export default CartID
+
+export default CartID;

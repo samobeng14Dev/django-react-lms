@@ -70,3 +70,20 @@ export interface Cart {
 	cart_id: string;
 	date: string;
 }
+
+export interface CartStats {
+	total_price: number;
+	total_tax: number;
+	total_total: number;
+}
+
+export interface CartListItem {
+	id: number;
+	price: string;
+	tax_fee: string;
+	total: string;
+	country: string;
+	cart_id: string;
+	date: string;
+	course: Course;
+}
