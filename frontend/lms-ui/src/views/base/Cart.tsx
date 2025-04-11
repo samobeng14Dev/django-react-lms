@@ -1,15 +1,18 @@
 
-import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect, useContext } from 'react'
 import apiInstance from '../../utils/axios'
 import CartID from '../plugin/CartID'
 import { CartListItem,CartStats } from '../../apiStructure/modelTypes'
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
+import Toast from '../plugin/Toast'
+// import { CartContext } from '../plugin/Context'
 
 function Cart() {
     const [cart, setCart] = useState<CartListItem[]>([]);
     const [cartStats, setCartStats] = useState<CartStats | null>(null);
+    //  const [cartCount, setCartCount] = useContext(CartContext);
 
     // const [loading, setLoading] = useState(true)
     
@@ -36,7 +39,25 @@ function Cart() {
     useEffect(() => {
         fetchCartItem()
     
-    },[])
+    }, [])
+    
+     const navigate = useNavigate();
+
+			const cartItemDelete = async (itemId:number) => {
+				await apiInstance
+					.delete(`course/cart-item-delete/${CartID()}/${itemId}/`)
+					.then((res) => {
+						fetchCartItem();
+						Toast().fire({
+							icon: "success",
+							title: "Cart Item Deleted",
+						});
+						// Set cart count after adding to cart
+						// apiInstance.get(`course/cart-list/${CartID()}/`).then((res) => {
+						// 	setCartCount(res.data?.length);
+						// });
+					});
+			};
     return (
 			<>
 				<BaseHeader />
@@ -123,7 +144,7 @@ function Cart() {
 															</td>
 															<td>
 																<button
-																	// onClick={() => cartItemDelete(c.id)}
+																	onClick={() => cartItemDelete(c.id)}
 																	className='btn btn-sm btn-danger px-2 mb-0'
 																	type='button'>
 																	<i className='fas fa-fw fa-times' />
