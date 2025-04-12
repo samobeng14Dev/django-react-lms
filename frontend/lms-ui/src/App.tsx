@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import MainWrapper from "./Layouts/MainWrapper";
 import PrivateRoute from "./Layouts/PrivateRoute";
@@ -10,30 +10,73 @@ import CreateNewPassword from "./views/auth/CreateNewPassword";
 import Index from "./views/base/Index";
 import CourseDetail from "./views/base/CourseDetail";
 import Cart from "./views/base/Cart";
+import { CartContext } from "./views/plugin/Context";
+import apiInstance from "./utils/axios";
+import UserData from "./views/plugin/UserData";
+import CartID from "./views/plugin/CartID";
+import useAxios from "./utils/useAxios";
+
 
 
 const App: React.FC = () => {
-    return (
-        <BrowserRouter>
-            <MainWrapper>
-                <Routes>
-                    <Route path="/register/" element={ <Register/>} /> 
-                    <Route path="/login/" element={ <Login/>} /> 
-                    <Route path="/logout/" element={<Logout />} /> 
-                    <Route path="/forgot-password/" element={ <ForgotPassword/>} /> 
-                    <Route path="/create-new-password/" element={<CreateNewPassword />} /> 
-                    
-                    {/* Base Route*/}
-                    <Route path="" element={<Index />} />
-                    <Route path="/course-detail/:slug" element={<CourseDetail />} />
-                    <Route path="/cart/" element={<Cart />} />
 
-                    {/* Private Routes */}
-                </Routes>
-            </MainWrapper>
-        </BrowserRouter>
-  
-  );
+       const [cartCount, setCartCount] = useState(0);
+				const [profile, setProfile] = useState([]);
+
+			useEffect(() => {
+				apiInstance.get(`course/cart-list/${CartID()}/`).then((res) => {
+					setCartCount(res.data?.length);
+				});
+
+				
+			}, []);
+
+    return (
+			<CartContext.Provider value={[cartCount, setCartCount]}>
+				<BrowserRouter>
+					<MainWrapper>
+						<Routes>
+							<Route
+								path='/register/'
+								element={<Register />}
+							/>
+							<Route
+								path='/login/'
+								element={<Login />}
+							/>
+							<Route
+								path='/logout/'
+								element={<Logout />}
+							/>
+							<Route
+								path='/forgot-password/'
+								element={<ForgotPassword />}
+							/>
+							<Route
+								path='/create-new-password/'
+								element={<CreateNewPassword />}
+							/>
+
+							{/* Base Route*/}
+							<Route
+								path=''
+								element={<Index />}
+							/>
+							<Route
+								path='/course-detail/:slug'
+								element={<CourseDetail />}
+							/>
+							<Route
+								path='/cart/'
+								element={<Cart />}
+							/>
+
+							{/* Private Routes */}
+						</Routes>
+					</MainWrapper>
+				</BrowserRouter>
+			</CartContext.Provider>
+		);
 };
 
 export default App;

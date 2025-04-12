@@ -129,45 +129,38 @@ class CourseDetailAPIView(generics.RetrieveAPIView):
 
 
 class CartAPIView(generics.CreateAPIView):
-    serializer_class = api_serializers.CartSerializer
     queryset = api_models.Cart.objects.all()
+    serializer_class = api_serializers.CartSerializer
     permission_classes = [AllowAny]
 
-    def create(self, request: Request, *args, **kwargs):
-        """This retrieves the necessary fields (course_id, user_id, price, country, and cart_id) from the incoming request payload."""
-        course_id = request.data.get("course_id")
-        user_id = request.data.get("user_id")
-        price = request.data.get("price")
-        country_name = request.data.get("country_name")
-        cart_id = request.data.get("cart_id")
+    def create(self, request, *args, **kwargs):
+        course_id = request.data['course_id']
+        user_id = request.data['user_id']
+        price = request.data['price']
+        country_name = request.data['country_name']
+        cart_id = request.data['cart_id']
 
-        """This filters the Course model to get the first object matching the provided course_id. It returns None if no match is found."""
+        print("course_id ==========", course_id)
 
         course = api_models.Course.objects.filter(id=course_id).first()
-
-        """This checks if the user_id is not undefined. If it’s not, it filters the User model to get the first object matching the provided user_id. It returns None if no match is found. If the user_id is undefined, it sets the user to None."""
 
         if user_id != "undefined":
             user = User.objects.filter(id=user_id).first()
         else:
             user = None
 
-        """This checks if the country exists in the Country model. If it does, it sets the country variable to the country name. If it doesn’t, it returns a 404 status code with a message."""
-
         try:
             country_object = api_models.Country.objects.filter(
                 name=country_name).first()
             country = country_object.name
-
-        except api_models.Country.DoesNotExist:
-            return Response({'message': 'Country does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        except:
+            country_object = None
+            country = "United States"
 
         if country_object:
-            tax_rate = country_object.tax_rate/100
+            tax_rate = country_object.tax_rate / 100
         else:
             tax_rate = 0
-
-            '''This checks if there’s an existing cart with the given cart_id and course.If a cart is found, it updates the cart. If no cart is found, it creates a new one.'''
 
         cart = api_models.Cart.objects.filter(
             cart_id=cart_id, course=course).first()
@@ -176,18 +169,27 @@ class CartAPIView(generics.CreateAPIView):
             cart.course = course
             cart.user = user
             cart.price = price
-            cart.tax_fee = Decimal(price)*Decimal(tax_rate)
+            cart.tax_fee = Decimal(price) * Decimal(tax_rate)
             cart.country = country
             cart.cart_id = cart_id
-            cart.total = Decimal(cart.price)+Decimal(cart.tax_fee)
+            cart.total = Decimal(cart.price) + Decimal(cart.tax_fee)
             cart.save()
 
-            return Response({'message': 'Cart updated successfully'}, status=status.HTTP_200_OK)
-        else:
-            cart = api_models.Cart.objects.create(course=course, user=user, price=price, tax_fee=Decimal(
-                price)*Decimal(tax_rate), country=country, cart_id=cart_id, total=Decimal(price)+Decimal(price)*Decimal(tax_rate))
+            return Response({"message": "Cart Updated Successfully"}, status=status.HTTP_200_OK)
 
-            return Response({'message': 'Cart created successfully'}, status=status.HTTP_201_CREATED)
+        else:
+            cart = api_models.Cart()
+
+            cart.course = course
+            cart.user = user
+            cart.price = price
+            cart.tax_fee = Decimal(price) * Decimal(tax_rate)
+            cart.country = country
+            cart.cart_id = cart_id
+            cart.total = Decimal(cart.price) + Decimal(cart.tax_fee)
+            cart.save()
+
+            return Response({"message": "Cart Created Successfully"}, status=status.HTTP_201_CREATED)
 
 
 class CartListAPIView(generics.ListAPIView):

@@ -7,14 +7,18 @@ import { Course, } from "../../apiStructure/modelTypes";
 import useCurrentAddress from "../plugin/UserCountry";
 import CartID from "../plugin/CartID";
 import UserData from "../plugin/UserData";
-import { useState, useEffect } from "react";
+import { useState, useEffect, } from "react";
+import { CartContext } from "../plugin/Context";
 import moment from "moment";
 import Toast  from "../plugin/Toast";
+import apiInstance from "../../utils/axios";
 
 function CourseDetail() {
 	const [course, setCourse] = useState<Course | null>(null);
 	const [loading, setLoading] = useState(true);
-	const [addToCartBtn, setAddToCartBtn]=useState("Add To Cart")
+	const [addToCartBtn, setAddToCartBtn] = useState("Add To Cart")
+	const [cartCount, setCartCount] = useState(CartContext);
+	
 	const param = useParams();
 	
 	const currentAddress = useCurrentAddress()
@@ -64,12 +68,23 @@ function CourseDetail() {
 				.post("/course/cart/", formData)
 				.then((res) => {
 					console.log(res.data);
-					setAddToCartBtn("Added To Cart")
+					setAddToCartBtn("Added To Cart");
+					
 					Toast().fire({
 						title: "Added To Cart",
-						icon:"success"
-						
-					})
+						icon: "success",
+					});
+
+					// Set cart count a
+						apiInstance.get(`course/cart-list/${CartID()}/`).then((res) => {
+							setCartCount(res.data?.length);
+						});
+					
+					window.location.reload();
+			
+
+					
+					// setCartCount(res.data?.length);
 					
 				});
 		} catch (error) {

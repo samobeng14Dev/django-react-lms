@@ -7,34 +7,33 @@ import { CartListItem,CartStats } from '../../apiStructure/modelTypes'
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
 import Toast from '../plugin/Toast'
+import { CartContext } from '../plugin/Context'
 // import { CartContext } from '../plugin/Context'
 
 function Cart() {
     const [cart, setCart] = useState<CartListItem[]>([]);
     const [cartStats, setCartStats] = useState<CartStats | null>(null);
-    //  const [cartCount, setCartCount] = useContext(CartContext);
+     const [cartCount, setCartCount] = useContext<any>(CartContext);
 
     // const [loading, setLoading] = useState(true)
     
-  const fetchCartItem = async () => {
-		try {
-			// Fetch cart items
-			const cartResponse = await apiInstance.get(
-				`/course/cart-list/${CartID()}/`
-			);
-			console.log("cart-list", cartResponse.data);
-			setCart(cartResponse.data);
+   const fetchCartItem = async () => {
+			try {
+				await apiInstance.get(`course/cart-list/${CartID()}/`).then((res) => {
+					setCart(res.data);
+				});
 
-			// Fetch cart stats
-			const cartStatsResponse = await apiInstance.get(
-				`/cart/cart-stats/${CartID()}/`
-			);
-			console.log("cart-stats", cartStatsResponse.data);
-			setCartStats(cartStatsResponse.data);
-		} catch (error) {
-			console.error("Error fetching cart data:", error);
-		}
-    };
+				await apiInstance.get(`cart/stats/${CartID()}/`).then((res) => {
+					setCartStats(res.data);
+				})
+			} catch (error) {
+				console.log(error);
+			}
+		};
+
+		useEffect(() => {
+			fetchCartItem();
+		}, []);
     
     useEffect(() => {
         fetchCartItem()
@@ -43,21 +42,21 @@ function Cart() {
     
      const navigate = useNavigate();
 
-			const cartItemDelete = async (itemId:number) => {
-				await apiInstance
-					.delete(`course/cart-item-delete/${CartID()}/${itemId}/`)
-					.then((res) => {
-						fetchCartItem();
-						Toast().fire({
-							icon: "success",
-							title: "Cart Item Deleted",
-						});
-						// Set cart count after adding to cart
-						// apiInstance.get(`course/cart-list/${CartID()}/`).then((res) => {
-						// 	setCartCount(res.data?.length);
-						// });
-					});
-			};
+	const cartItemDelete = async (itemId:number) => {
+		await apiInstance
+			.delete(`course/cart-item-delete/${CartID()}/${itemId}/`)
+			.then((res) => {
+				fetchCartItem();
+				Toast().fire({
+					icon: "success",
+					title: "Cart Item Deleted",
+				});
+				// Set cart count after adding to cart
+				apiInstance.get(`course/cart-list/${CartID()}/`).then((res) => {
+					setCartCount(res.data?.length);
+				});
+			});
+	};
     return (
 			<>
 				<BaseHeader />
@@ -107,7 +106,7 @@ function Cart() {
 								{/* Main content START */}
 								<div className='col-lg-8 mb-4 mb-sm-0'>
 									<div className='p-4 shadow rounded-3'>
-										<h5 className='mb-0 mb-3'>Cart Items (3)</h5>
+										<h5 className='mb-0 mb-3'>Cart Items ({cartCount})</h5>
 
 										<div className='table-responsive border-0 rounded-3'>
 											<table className='table align-middle p-4 mb-0'>
