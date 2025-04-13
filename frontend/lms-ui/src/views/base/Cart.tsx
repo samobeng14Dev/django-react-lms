@@ -2,11 +2,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import apiInstance from "../../utils/axios";
 import CartID from "../plugin/CartID";
+import { userId } from "../../utils/constants";
 import { CartListItem, CartStats } from "../../apiStructure/modelTypes";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
+import useAxios from "../../utils/useAxios";
+import Swal from "sweetalert2";
 // import { CartContext } from '../plugin/Context'
 
 function Cart() {
@@ -66,7 +69,38 @@ function Cart() {
 					...bioData,
 					[event.target.name]: event.target.value,
 				});
-			};
+	};
+	    
+	   const createOrder = async (e: React.FormEvent<HTMLFormElement>) => {
+				e.preventDefault();
+				if (!bioData.full_name || !bioData.email || !bioData.country) {
+					Toast().fire({
+						icon: "warning",
+						title: "Please provide your bio data",
+					});
+					return;
+				}
+				const formdata = new FormData();
+				formdata.append("full_name", bioData.full_name);
+				formdata.append("email", bioData.email);
+				formdata.append("country", bioData.country);
+				formdata.append("cart_id", CartID());
+				formdata.append("user_id", userId);
+
+				try {
+					await useAxios()
+						.post(`/order/create-order/`, formdata)
+						.then((res) => {
+							navigate(`/checkout/${res.data.order_oid}/`);
+						});
+				} catch (error) {
+					console.log(error);
+					Swal.fire({
+						icon: "error",
+						title: (error as any)?.response?.data?.detail || "An error occurred",
+					});
+				};
+			}
 	return (
 		<>
 			<BaseHeader />
@@ -111,7 +145,7 @@ function Cart() {
 
 			<section className='pt-5'>
 				<div className='container'>
-					<form>
+					<form onSubmit={createOrder}>
 						<div className='row g-4 g-sm-5'>
 							{/* Main content START */}
 							<div className='col-lg-8 mb-4 mb-sm-0'>
@@ -250,11 +284,11 @@ function Cart() {
 										</li>
 									</ul>
 									<div className='d-grid'>
-										<Link
-											to='/checkout'
+										<button
+											type="submit"
 											className='btn btn-lg btn-success'>
 											Proceed to Checkout
-										</Link>
+										</button>
 									</div>
 									<p className='small mb-0 mt-2 text-center'>
 										By proceeding to checkout, you agree to these{" "}

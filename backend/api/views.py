@@ -298,7 +298,7 @@ class CreateOrderAPIView(generics.CreateAPIView):
             order.save()
 
         # Return success response
-        return Response({'message': 'Order created successfully'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'Order created successfully','order_oid':order.oid}, status=status.HTTP_201_CREATED)
 
 
 class CheckoutAPIView(generics.RetrieveAPIView):

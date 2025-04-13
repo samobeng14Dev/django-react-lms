@@ -15,6 +15,7 @@ import apiInstance from "./utils/axios";
 import UserData from "./views/plugin/UserData";
 import CartID from "./views/plugin/CartID";
 import useAxios from "./utils/useAxios";
+import Checkout from "./views/base/Checkout";
 
 
 
@@ -69,6 +70,10 @@ const App: React.FC = () => {
 							<Route
 								path='/cart/'
 								element={<Cart />}
+							/>
+							<Route
+								path='/checkout/:order_oid/'
+								element={<Checkout />}
 							/>
 
 							{/* Private Routes */}
