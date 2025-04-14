@@ -87,3 +87,69 @@ export interface CartListItem {
 	date: string;
 	course: Course;
 }
+
+export interface Teacher {
+	id: number;
+	image: string;
+	full_name: string;
+	bio: string;
+	facebook: string | null;
+	twitter: string | null;
+	linkedin: string | null;
+	about: string;
+}
+
+export interface Student {
+	id: number;
+	password: string;
+	last_login: string;
+	is_superuser: boolean;
+	first_name: string;
+	last_name: string;
+	is_staff: boolean;
+	is_active: boolean;
+	date_joined: string;
+	username: string;
+	email: string;
+	full_name: string;
+	otp: string;
+	refresh_token: string;
+	groups: any[]; // Update this if you know the shape of group objects
+	user_permissions: any[]; // Update this if you know the shape of permission objects
+}
+
+export interface Order {
+	id: number;
+	sub_total: string;
+	tax_fee: string;
+	total: string;
+	initial_total: string;
+	saved: string;
+	payment_status: string;
+	full_name: string;
+	email: string;
+	country: string;
+	stripe_session_id: string | null;
+	oid: string;
+	date: string;
+	student: Student;
+	teachers: Teacher[];
+}
+
+export interface OrderItem {
+	id: number;
+	price: string;
+	tax_fee: string;
+	total: string;
+	initial_total: string;
+	saved: string;
+	applied_coupon: boolean;
+	oid: string;
+	date: string;
+	order: Order;
+}
+
+export interface OrderResponse {
+	id: number;
+	order_items: OrderItem[];
+}
