@@ -4,6 +4,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.db import transaction
+from django.contrib.auth.hashers import check_password
 
 from api import models as api_models
 from api import serializer as api_serializers
@@ -101,6 +102,25 @@ class PasswordChangeAPIView(generics.UpdateAPIView):
         else:
             return Response({'message': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
+class ChangePasswordAPIView(generics.CreateAPIView):
+    serializer_class=api_serializers.UserSerializer
+    permission_class=[AllowAny]
+
+    def create(self,request, *args, **kwargs):
+        user_id= request.data["user_id"]
+        old_password=request.data["old_password"]
+        new_password=request.data["new_password"]
+
+        user = User.objects.get(id=user_id)
+        if user is not None:
+            if check_password(old_password, user.password):
+                user.set_password(new_password)
+                user.save()
+                return Response({"message": "Password changed successfully", "icon": "success"})
+            else:
+                return Response({"message": "Old password is incorrect", "icon": "warning"})
+        else:
+            return Response({"message": "User does not exists", "icon": "error"})
 
 class CategoryListAPIView(generics.ListAPIView):
     queryset = api_models.Category.objects.filter(active=True)
@@ -436,9 +456,9 @@ class PaymentSuccessAPIView(generics.CreateAPIView):
         session_id = request.data['session_id']
         paypal_order_id = request.data['paypal_order_id']
 
-        print("order_oid ====", order_oid)
-        print("session_id ====", session_id)
-        print("paypal_order_id ====", paypal_order_id)
+        # print("order_oid ====", order_oid)
+        # print("session_id ====", session_id)
+        # print("paypal_order_id ====", paypal_order_id)
 
         order = api_models.CartOrder.objects.get(oid=order_oid)
         order_items = api_models.CartOrderItem.objects.filter(order=order)

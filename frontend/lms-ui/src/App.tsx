@@ -7,6 +7,7 @@ import Login from "./views/auth/Login";
 import Logout from "./views/auth/Logout";
 import ForgotPassword from "./views/auth/ForgotPassword";
 import CreateNewPassword from "./views/auth/CreateNewPassword";
+import StudentChangePassword from "./views/student/ChangePassword";
 import Index from "./views/base/Index";
 import CourseDetail from "./views/base/CourseDetail";
 import Cart from "./views/base/Cart";
@@ -17,71 +18,76 @@ import CartID from "./views/plugin/CartID";
 import useAxios from "./utils/useAxios";
 import Checkout from "./views/base/Checkout";
 
-
-
 const App: React.FC = () => {
+	const [cartCount, setCartCount] = useState(0);
+	const [profile, setProfile] = useState([]);
 
-       const [cartCount, setCartCount] = useState(0);
-				const [profile, setProfile] = useState([]);
+	useEffect(() => {
+		apiInstance.get(`course/cart-list/${CartID()}/`).then((res) => {
+			setCartCount(res.data?.length);
+		});
+	}, []);
 
-			useEffect(() => {
-				apiInstance.get(`course/cart-list/${CartID()}/`).then((res) => {
-					setCartCount(res.data?.length);
-				});
+	return (
+		<CartContext.Provider value={[cartCount, setCartCount]}>
+			<BrowserRouter>
+				<MainWrapper>
+					<Routes>
+						<Route
+							path='/register/'
+							element={<Register />}
+						/>
+						<Route
+							path='/login/'
+							element={<Login />}
+						/>
+						<Route
+							path='/logout/'
+							element={<Logout />}
+						/>
+						<Route
+							path='/forgot-password/'
+							element={<ForgotPassword />}
+						/>
+						<Route
+							path='/create-new-password/'
+							element={<CreateNewPassword />}
+						/>
 
-				
-			}, []);
+						{/* Base Route*/}
+						<Route
+							path=''
+							element={<Index />}
+						/>
+						<Route
+							path='/course-detail/:slug'
+							element={<CourseDetail />}
+						/>
+						<Route
+							path='/cart/'
+							element={<Cart />}
+						/>
+						<Route
+							path='/checkout/:order_oid/'
+							element={<Checkout />}
+						/>
 
-    return (
-			<CartContext.Provider value={[cartCount, setCartCount]}>
-				<BrowserRouter>
-					<MainWrapper>
-						<Routes>
-							<Route
-								path='/register/'
-								element={<Register />}
-							/>
-							<Route
-								path='/login/'
-								element={<Login />}
-							/>
-							<Route
-								path='/logout/'
-								element={<Logout />}
-							/>
-							<Route
-								path='/forgot-password/'
-								element={<ForgotPassword />}
-							/>
-							<Route
-								path='/create-new-password/'
-								element={<CreateNewPassword />}
-							/>
+						{/* Student Routes */}
+						<Route
+							path='/student/change-password/'
+							element={
+								<PrivateRoute>
+									<StudentChangePassword />
+								</PrivateRoute>
+							}
+						/>
 
-							{/* Base Route*/}
-							<Route
-								path=''
-								element={<Index />}
-							/>
-							<Route
-								path='/course-detail/:slug'
-								element={<CourseDetail />}
-							/>
-							<Route
-								path='/cart/'
-								element={<Cart />}
-							/>
-							<Route
-								path='/checkout/:order_oid/'
-								element={<Checkout />}
-							/>
-
-							{/* Private Routes */}
-						</Routes>
-					</MainWrapper>
-				</BrowserRouter>
-			</CartContext.Provider>
-		);
+						{/* Private Routes */}
+					</Routes>
+				</MainWrapper>
+			</BrowserRouter>
+		</CartContext.Provider>
+	);
 };
 
 export default App;

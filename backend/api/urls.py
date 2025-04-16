@@ -13,6 +13,7 @@ urlpatterns = [
          api_views.PasswordResetEmailVerifyAPIView.as_view(), name='password_reset_email_verify'),
     path('user/password-change/',
          api_views.PasswordChangeAPIView.as_view(), name='password_change'),
+    path('user/change-password/',api_views.ChangePasswordAPIView.as_view(), name='change_password'),
 
     # Core Endpoints
     path('core/category/', api_views.CategoryListAPIView.as_view(),
