@@ -599,8 +599,75 @@ class StudentCourseCompletedCreateAPIView(generics.CreateAPIView):
             return Response({"message": "Course marked as completed"})
 
 
+class StudentNoteCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = api_serializers.NoteSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        enrollment_id = self.kwargs['enrollment_id']
+
+        user = User.objects.get(id=user_id)
+        enrolled = api_models.EnrolledCourse.objects.get(
+            enrollment_id=enrollment_id)
+
+        return api_models.Note.objects.filter(user=user, course=enrolled.course)
+
+    def create(self, request, *args, **kwargs):
+        user_id = request.data['user_id']
+        enrollment_id = request.data['enrollment_id']
+        title = request.data['title']
+        note = request.data['note']
+
+        user = User.objects.get(id=user_id)
+        enrolled = api_models.EnrolledCourse.objects.get(
+            enrollment_id=enrollment_id)
+
+        api_models.Note.objects.create(
+            user=user, course=enrolled.course, note=note, title=title)
+
+        return Response({"message": "Note created successfully"}, status=status.HTTP_201_CREATED)
 
 
+class StudentNoteDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = api_serializers.NoteSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        user_id = self.kwargs['user_id']
+        enrollment_id = self.kwargs['enrollment_id']
+        note_id = self.kwargs['note_id']
+
+        user = User.objects.get(id=user_id)
+        enrolled = api_models.EnrolledCourse.objects.get(
+            enrollment_id=enrollment_id)
+        note = api_models.Note.objects.get(
+            user=user, course=enrolled.course, id=note_id)
+        return note
+
+
+class StudentRateCourseCreateAPIView(generics.CreateAPIView):
+    serializer_class = api_serializers.ReviewSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        user_id = request.data['user_id']
+        course_id = request.data['course_id']
+        rating = request.data['rating']
+        review = request.data['review']
+
+        user = User.objects.get(id=user_id)
+        course = api_models.Course.objects.get(id=course_id)
+
+        api_models.Review.objects.create(
+            user=user,
+            course=course,
+            review=review,
+            rating=rating,
+            active=True,
+        )
+
+        return Response({"message": "Review created successfully"}, status=status.HTTP_201_CREATED)
 
 
 
