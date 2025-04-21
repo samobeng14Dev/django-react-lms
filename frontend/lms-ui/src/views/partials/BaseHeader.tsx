@@ -2,6 +2,7 @@ import {useContext} from "react";
 import { Link } from "react-router-dom";
 import { CartContext } from "../plugin/Context";
 import { CartContextType } from "../plugin/Context";
+import { useAuthStore } from "../../store/auth";
 
 function BaseHeader() {
     const [cartCount,setCartCount]=useContext<any>(CartContext)

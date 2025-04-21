@@ -56,8 +56,8 @@ urlpatterns = [
          api_views.QuestionAnswerMessageSendAPIView.as_view()),
 
     # Teacher Routes
-    path("teacher/summary/<teacher_id>/",
-         api_views.TeacherSummaryAPIView.as_view()),
+#     path("teacher/summary/<teacher_id>/",
+#          api_views.TeacherSummaryAPIView.as_view()),
 #     path("teacher/course-lists/<teacher_id>/",
 #          api_views.TeacherCourseListAPIView.as_view()),
 #     path("teacher/review-lists/<teacher_id>/",
