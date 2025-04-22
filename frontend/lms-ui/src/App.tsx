@@ -8,6 +8,7 @@ import Logout from "./views/auth/Logout";
 import ForgotPassword from "./views/auth/ForgotPassword";
 import CreateNewPassword from "./views/auth/CreateNewPassword";
 import StudentChangePassword from "./views/student/ChangePassword";
+import StudentDashboard from "./views/student/Dashboard"; 
 import Index from "./views/base/Index";
 import CourseDetail from "./views/base/CourseDetail";
 import Cart from "./views/base/Cart";
@@ -73,6 +74,14 @@ const App: React.FC = () => {
 						/>
 
 						{/* Student Routes */}
+						<Route
+							path='/student/dashboard/'
+							element={
+								<PrivateRoute>
+									<StudentDashboard />
+								</PrivateRoute>
+							}
+						/>
 						<Route
 							path='/student/change-password/'
 							element={
