@@ -36,7 +36,20 @@ function Dashboard() {
 
 	useEffect(() => {
 		fetchData();
-	}, []);
+    }, []);
+    
+	const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+			const query = event.target.value.toLowerCase();
+			console.log(query);
+			if (query === "") {
+				fetchData();
+			} else {
+				const filtered = course.filter((c:any) => {
+					return c.course.title.toLowerCase().includes(query);
+				});
+				setCourse(filtered);
+			}
+		};
 
 	return (
 		<>
@@ -125,7 +138,7 @@ function Dashboard() {
 													type='search'
 													className='form-control'
 													placeholder='Search Your Courses'
-													// onChange={handleSearch}
+													onChange={handleSearch}
 												/>
 											</div>
 										</form>
