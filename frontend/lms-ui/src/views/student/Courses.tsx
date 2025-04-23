@@ -15,14 +15,12 @@ function Courses() {
 	const [fetching, setFetching] = useState(true);
 const fetchData = () => {
 	setFetching(true);
-	useAxios()
-		.get(`student/summary/${UserData()?.user_id}/`)
-		.then((res: any) => {
-			// console.log(res.data[0]);
-			setStats(res.data[0]);
-		});
 
-	
+	useAxios().get(`student/course-list/${UserData()?.user_id}/`).then((res) => {
+		console.log(res.data);
+		setCourse(res.data);
+		setFetching(false);
+	});
 };
 
 useEffect(() => {
