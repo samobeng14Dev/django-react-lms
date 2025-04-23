@@ -11,6 +11,7 @@ import StudentChangePassword from "./views/student/ChangePassword";
 import StudentDashboard from "./views/student/Dashboard"; 
 import Index from "./views/base/Index";
 import CourseDetail from "./views/base/CourseDetail";
+import StudentCourses from "./views/student/Courses";
 import Cart from "./views/base/Cart";
 import { CartContext } from "./views/plugin/Context";
 import apiInstance from "./utils/axios";
@@ -79,6 +80,14 @@ const App: React.FC = () => {
 							element={
 								<PrivateRoute>
 									<StudentDashboard />
+								</PrivateRoute>
+							}
+						/>
+						<Route
+							path='/student/courses/'
+							element={
+								<PrivateRoute>
+									<StudentCourses />
 								</PrivateRoute>
 							}
 						/>
