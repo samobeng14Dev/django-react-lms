@@ -14,49 +14,50 @@ import useAxios from '../../utils/useAxios';
 
 
 function CourseDetail() {
+	const [course, setCourse] = useState<any>([]);
+	const [variantItem, setVariantItem] = useState<any>(null);
+	const param = useParams();
+	// console.log('param' ,param,);
+	const [show, setShow] = useState(false);
+	const handleClose = () => setShow(false);
+	const handleShow = (variant_item: any) => {
+    setShow(true);
+    setVariantItem(variant_item)
+		// console.log(lesson); // Handle the lesson data as needed
+	};
 
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-const handleShow = (lesson: any) => { 
-  setShow(true); 
-  console.log(lesson); // Handle the lesson data as needed
-}
+	const [noteShow, setNoteShow] = useState(false);
+	const handleNoteClose = () => setNoteShow(false);
+	const handleNoteShow = () => {
+		setNoteShow(true);
+	};
 
-  const [noteShow, setNoteShow] = useState(false);
-  const handleNoteClose = () => setNoteShow(false);
-  const handleNoteShow = () => { setNoteShow(true); }
+	const [ConversationShow, setConversationShow] = useState(false);
+	const handleConversationClose = () => setConversationShow(false);
+	const handleConversationShow = () => {
+		setConversationShow(true);
+	};
 
-  const [ConversationShow, setConversationShow] = useState(false);
-  const handleConversationClose = () => setConversationShow(false);
-  const handleConversationShow = () => { setConversationShow(true); }
+	const fetchCourseDetail = async () => {
+		useAxios()
+			.get(
+				`student/course-detail/${UserData()?.user_id}/${param.enrollment_id}/`
+			)
+			.then((res) => {
+				setCourse(res.data);
+				// setQuestions(res.data.question_answer);
+				// setStudentReview(res.data.review);
+				// const percentageCompleted =
+				// (res.data.completed_lesson?.length / res.data.lectures?.length) *
+				// 100;
+				// setCompletionPercentage(percentageCompleted?.toFixed(0));
+			});
+	};
+	useEffect(() => {
+		fetchCourseDetail();
+	}, []);
 
-  const [course, setCourse] = useState<any>([])
-  const param = useParams();
-  // console.log('param' ,param,);
-   const fetchCourseDetail = async () => {
-			useAxios()
-				.get(
-					`student/course-detail/${UserData()?.user_id}/${param.enrollment_id}/`
-				)
-				.then((res) => {
-					setCourse(res.data);
-					// setQuestions(res.data.question_answer);
-					// setStudentReview(res.data.review);
-					// const percentageCompleted =
-						// (res.data.completed_lesson?.length / res.data.lectures?.length) *
-						// 100;
-					// setCompletionPercentage(percentageCompleted?.toFixed(0));
-				});
-		};
-		useEffect(() => {
-			fetchCourseDetail();
-		}, []);
-
-  
-
-
-
-  return (
+	return (
 		<>
 			<BaseHeader />
 
@@ -179,76 +180,83 @@ const handleShow = (lesson: any) => {
 																	</div>
 																</div>
 																{/* Item */}
-																{course?.curriculum?.map((c:any, index:number) => (
-																	<div className='accordion-item mb-3 p-3 bg-light'>
-																		<h6
-																			className='accordion-header font-base'
-																			id='heading-1'>
-																			<button
-																				className='accordfion-button p-3 w-100 bg-light btn border fw-bold rounded d-sm-flex d-inline-block collapsed'
-																				type='button'
-																				data-bs-toggle='collapse'
-																				data-bs-target={`#collapse-${c.variant_id}`}
-																				aria-expanded='true'
-																				aria-controls={`collapse-${c.variant_id}`}>
-																				{c.title}
-																				<span className='small ms-0 ms-sm-2'>
-																					({c.variant_items?.length} Lecture
-																					{c.variant_items?.length > 1 && "s"})
-																				</span>
-																			</button>
-																		</h6>
+																{course?.curriculum?.map(
+																	(c: any, index: number) => (
+																		<div className='accordion-item mb-3 p-3 bg-light'>
+																			<h6
+																				className='accordion-header font-base'
+																				id='heading-1'>
+																				<button
+																					className='accordfion-button p-3 w-100 bg-light btn border fw-bold rounded d-sm-flex d-inline-block collapsed'
+																					type='button'
+																					data-bs-toggle='collapse'
+																					data-bs-target={`#collapse-${c.variant_id}`}
+																					aria-expanded='true'
+																					aria-controls={`collapse-${c.variant_id}`}>
+																					{c.title}
+																					<span className='small ms-0 ms-sm-2'>
+																						({c.variant_items?.length} Lecture
+																						{c.variant_items?.length > 1 && "s"}
+																						)
+																					</span>
+																				</button>
+																			</h6>
 
-																		<div
-																			id={`collapse-${c.variant_id}`}
-																			className='accordion-collapse collapse show'
-																			aria-labelledby='heading-1'
-																			data-bs-parent='#accordionExample2'>
-																			<div className='accordion-body mt-3'>
-																				{/* Course lecture */}
-																				{c.variant_items?.map((l:any, index:any) => (
-																					<>
-																						<div className='d-flex justify-content-between align-items-center'>
-																							<div className='position-relative d-flex align-items-center'>
-																								<button
-																									onClick={() => handleShow(l)}
-																									className='btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static'>
-																									<i className='fas fa-play me-0' />
-																								</button>
-																								<span className='d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px'>
-																									{l.title}
-																								</span>
-																							</div>
-																							<div className='d-flex'>
-																								<p className='mb-0'>
-																									{l.content_duration ||
-																										"0m 0s"}
-																								</p>
-																								<input
-																									type='checkbox'
-																									className='form-check-input ms-2'
-																									name=''
-																									id=''
-																									// onChange={() =>
-																									// 	handleMarkLessonAsCompleted(
-																									// 		l.variant_item_id
-																									// 	)
-																									// }
-																									// checked={course.completed_lesson?.some(
-																									// 	(cl) =>
-																									// 		cl.variant_item.id ===
-																									// 		l.id
-																									// )}
-																								/>
-																							</div>
-																						</div>
-																						<hr />
-																					</>
-																				))}
+																			<div
+																				id={`collapse-${c.variant_id}`}
+																				className='accordion-collapse collapse show'
+																				aria-labelledby='heading-1'
+																				data-bs-parent='#accordionExample2'>
+																				<div className='accordion-body mt-3'>
+																					{/* Course lecture */}
+																					{c.variant_items?.map(
+																						(l: any, index: any) => (
+																							<>
+																								<div className='d-flex justify-content-between align-items-center'>
+																									<div className='position-relative d-flex align-items-center'>
+																										<button
+																											onClick={() =>
+																												handleShow(l)
+																											}
+																											className='btn btn-danger-soft btn-round btn-sm mb-0 stretched-link position-static'>
+																											<i className='fas fa-play me-0' />
+																										</button>
+																										<span className='d-inline-block text-truncate ms-2 mb-0 h6 fw-light w-100px w-sm-200px w-md-400px'>
+																											{l.title}
+																										</span>
+																									</div>
+																									<div className='d-flex'>
+																										<p className='mb-0'>
+																											{l.content_duration ||
+																												"0m 0s"}
+																										</p>
+																										<input
+																											type='checkbox'
+																											className='form-check-input ms-2'
+																											name=''
+																											id=''
+																											// onChange={() =>
+																											// 	handleMarkLessonAsCompleted(
+																											// 		l.variant_item_id
+																											// 	)
+																											// }
+																											// checked={course.completed_lesson?.some(
+																											// 	(cl) =>
+																											// 		cl.variant_item.id ===
+																											// 		l.id
+																											// )}
+																										/>
+																									</div>
+																								</div>
+																								<hr />
+																							</>
+																						)
+																					)}
+																				</div>
 																			</div>
 																		</div>
-																	</div>
-																))}
+																	)
+																)}
 															</div>
 															{/* Accordion END */}
 														</div>
@@ -530,13 +538,12 @@ const handleShow = (lesson: any) => {
 				size='lg'
 				onHide={handleClose}>
 				<Modal.Header closeButton>
-					<Modal.Title>Lesson: Lesson Title</Modal.Title>
+					<Modal.Title>Lesson: {variantItem?.title}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
 					<ReactPlayer
-						url={`url-here`}
+						url={variantItem?.file}
 						controls
-						playing
 						width={"100%"}
 						height={"100%"}
 					/>
