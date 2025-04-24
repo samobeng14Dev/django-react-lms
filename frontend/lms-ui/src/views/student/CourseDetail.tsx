@@ -16,6 +16,8 @@ import useAxios from '../../utils/useAxios';
 function CourseDetail() {
 	const [course, setCourse] = useState<any>([]);
 	const [variantItem, setVariantItem] = useState<any>(null);
+	const [completedPercentage, setCompletedPercentage] = useState<any>(0)
+	 const [markAsCompletedStatus, setMarkAsCompletedStatus] = useState<any>({});
 	const param = useParams();
 	// console.log('param' ,param,);
 	const [show, setShow] = useState(false);
@@ -47,15 +49,37 @@ function CourseDetail() {
 				setCourse(res.data);
 				// setQuestions(res.data.question_answer);
 				// setStudentReview(res.data.review);
-				// const percentageCompleted =
-				// (res.data.completed_lesson?.length / res.data.lectures?.length) *
-				// 100;
-				// setCompletionPercentage(percentageCompleted?.toFixed(0));
+				const percentageCompleted =
+				(res.data.completed_lesson?.length / res.data.lectures?.length) *
+				100;
+				setCompletedPercentage(parseFloat(percentageCompleted?.toFixed(0)));
 			});
 	};
 	useEffect(() => {
 		fetchCourseDetail();
 	}, []);
+
+const handleMarkLessonAsCompleted = (variantItemId:any) => {
+	const key = `lecture_${variantItemId}`;
+	setMarkAsCompletedStatus({
+		...markAsCompletedStatus,
+		[key]: "Updating",
+	});
+
+	const formdata = new FormData();
+	formdata.append("user_id", UserData()?.user_id || 0);
+	formdata.append("course_id", course.course?.id);
+	formdata.append("variant_item_id", variantItemId);
+
+	useAxios().post(`student/course-completed/`, formdata).then((res) => {
+		fetchCourseDetail();
+		setMarkAsCompletedStatus({
+			...markAsCompletedStatus,
+			[key]: "Updated",
+		});
+	});
+};
+
 
 	return (
 		<>
@@ -172,11 +196,11 @@ function CourseDetail() {
 																	<div
 																		className='progress-bar'
 																		role='progressbar'
-																		style={{ width: `${25}%` }}
+																		style={{ width: `${completedPercentage}%` }}
 																		aria-valuenow={25}
 																		aria-valuemin={0}
 																		aria-valuemax={100}>
-																		25%
+																		{completedPercentage}% Completed
 																	</div>
 																</div>
 																{/* Item */}
@@ -235,16 +259,16 @@ function CourseDetail() {
 																											className='form-check-input ms-2'
 																											name=''
 																											id=''
-																											// onChange={() =>
-																											// 	handleMarkLessonAsCompleted(
-																											// 		l.variant_item_id
-																											// 	)
-																											// }
-																											// checked={course.completed_lesson?.some(
-																											// 	(cl) =>
-																											// 		cl.variant_item.id ===
-																											// 		l.id
-																											// )}
+																											onChange={() =>
+																												handleMarkLessonAsCompleted(
+																													l.variant_item_id
+																												)
+																											}
+																											checked={course.completed_lesson?.some(
+																												(cl:any) =>
+																													cl.variant_item.id ===
+																													l.id
+																											)}
 																										/>
 																									</div>
 																								</div>

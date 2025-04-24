@@ -57,6 +57,9 @@ INSTALLED_APPS = [
     'anymail',
     'drf_yasg',
 
+    # Django Extensions
+    'django_extensions',
+
 ]
 
 MIDDLEWARE = [
@@ -155,9 +158,8 @@ STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 FRONTEND_SITE_URL = env('FRONTEND_SITE_URL')
 BACKEND_SITE_URL = env('BACKEND_SITE_URL')
 
-PAYPAL_CLIENT_ID=env('PAYPAL_CLIENT_ID') 
-PAYPAL_SECRET_ID=env('PAYPAL_SECRET_ID')
-
+PAYPAL_CLIENT_ID = env('PAYPAL_CLIENT_ID')
+PAYPAL_SECRET_ID = env('PAYPAL_SECRET_ID')
 
 
 ANYMAIL = {
