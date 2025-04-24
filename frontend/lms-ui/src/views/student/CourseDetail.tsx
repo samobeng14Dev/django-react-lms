@@ -1,30 +1,36 @@
-import React, { useState,useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import ReactPlayer from 'react-player'
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import ReactPlayer from "react-player";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
-import BaseHeader from '../partials/BaseHeader'
-import BaseFooter from '../partials/BaseFooter'
-import Sidebar from './Partials/Sidebar'
-import Header from './Partials/Header'
-import UserData from '../plugin/UserData';
-import useAxios from '../../utils/useAxios';
-
-
+import BaseHeader from "../partials/BaseHeader";
+import BaseFooter from "../partials/BaseFooter";
+import Sidebar from "./Partials/Sidebar";
+import Header from "./Partials/Header";
+import UserData from "../plugin/UserData";
+import useAxios from "../../utils/useAxios";
+import Toast from "../plugin/Toast";
 
 function CourseDetail() {
 	const [course, setCourse] = useState<any>([]);
 	const [variantItem, setVariantItem] = useState<any>(null);
-	const [completedPercentage, setCompletedPercentage] = useState<any>(0)
-	 const [markAsCompletedStatus, setMarkAsCompletedStatus] = useState<any>({});
-	const param = useParams();
+	const [completedPercentage, setCompletedPercentage] = useState<any>(0);
+	const [markAsCompletedStatus, setMarkAsCompletedStatus] = useState<any>({});
+
+	const [createNote, setCreateNote] = useState<{ title: string; note: string }>(
+		{ title: "", note: "" }
+	);
+	const [selectedNote, setSelectedNote] = useState<any>(null);
+
+	const param = useParams<{ enrollment_id: string }>();
+
 	// console.log('param' ,param,);
 	const [show, setShow] = useState(false);
 	const handleClose = () => setShow(false);
 	const handleShow = (variant_item: any) => {
-    setShow(true);
-    setVariantItem(variant_item)
+		setShow(true);
+		setVariantItem(variant_item);
 		// console.log(lesson); // Handle the lesson data as needed
 	};
 
@@ -50,8 +56,7 @@ function CourseDetail() {
 				// setQuestions(res.data.question_answer);
 				// setStudentReview(res.data.review);
 				const percentageCompleted =
-				(res.data.completed_lesson?.length / res.data.lectures?.length) *
-				100;
+					(res.data.completed_lesson?.length / res.data.lectures?.length) * 100;
 				setCompletedPercentage(parseFloat(percentageCompleted?.toFixed(0)));
 			});
 	};
@@ -59,27 +64,68 @@ function CourseDetail() {
 		fetchCourseDetail();
 	}, []);
 
-const handleMarkLessonAsCompleted = (variantItemId:any) => {
-	const key = `lecture_${variantItemId}`;
-	setMarkAsCompletedStatus({
-		...markAsCompletedStatus,
-		[key]: "Updating",
-	});
-
-	const formdata = new FormData();
-	formdata.append("user_id", UserData()?.user_id || 0);
-	formdata.append("course_id", course.course?.id);
-	formdata.append("variant_item_id", variantItemId);
-
-	useAxios().post(`student/course-completed/`, formdata).then((res) => {
-		fetchCourseDetail();
+	const handleMarkLessonAsCompleted = (variantItemId: any) => {
+		const key = `lecture_${variantItemId}`;
 		setMarkAsCompletedStatus({
 			...markAsCompletedStatus,
-			[key]: "Updated",
+			[key]: "Updating",
 		});
-	});
-};
 
+		const formdata = new FormData();
+		formdata.append("user_id", UserData()?.user_id || 0);
+		formdata.append("course_id", course.course?.id);
+		formdata.append("variant_item_id", variantItemId);
+
+		useAxios()
+			.post(`student/course-completed/`, formdata)
+			.then((res) => {
+				fetchCourseDetail();
+				setMarkAsCompletedStatus({
+					...markAsCompletedStatus,
+					[key]: "Updated",
+				});
+			});
+	};
+
+	const handleNoteChange = (
+		event: React.ChangeEvent<
+			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+		>
+	) => {
+		setCreateNote({
+			...createNote,
+			[event.target.name]: event.target.value,
+		});
+	};
+
+	const handleSubmitCreateNote = async (e: React.FormEvent) => {
+		e.preventDefault();
+
+		const formdata = new FormData();
+		formdata.append("user_id", UserData()?.user_id ?? "");
+		formdata.append("enrollment_id", param.enrollment_id ?? "");
+		formdata.append("title", createNote.title ?? "");
+		formdata.append("note", createNote.note ?? "");
+
+
+		try {
+			await useAxios()
+				.post(
+					`student/course-note/${UserData()?.user_id}/${param.enrollment_id}/`,
+					formdata
+				)
+				.then((res) => {
+					fetchCourseDetail();
+					handleNoteClose();
+					Toast().fire({
+						icon: "success",
+						title: "Note created",
+					});
+				});
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	return (
 		<>
@@ -265,7 +311,7 @@ const handleMarkLessonAsCompleted = (variantItemId:any) => {
 																												)
 																											}
 																											checked={course.completed_lesson?.some(
-																												(cl:any) =>
+																												(cl: any) =>
 																													cl.variant_item.id ===
 																													l.id
 																											)}
@@ -325,7 +371,7 @@ const handleMarkLessonAsCompleted = (variantItemId:any) => {
 																						/>
 																					</div>
 																					<div className='modal-body'>
-																						<form>
+																						<form onSubmit={handleSubmitCreateNote}>
 																							<div className='mb-3'>
 																								<label
 																									htmlFor='exampleInputEmail1'
@@ -335,6 +381,8 @@ const handleMarkLessonAsCompleted = (variantItemId:any) => {
 																								<input
 																									type='text'
 																									className='form-control'
+																									name='title'
+																									onChange={handleNoteChange}
 																								/>
 																							</div>
 																							<div className='mb-3'>
@@ -345,10 +393,14 @@ const handleMarkLessonAsCompleted = (variantItemId:any) => {
 																								</label>
 																								<textarea
 																									className='form-control'
-																									name=''
+																						
 																									id=''
 																									cols={30}
-																									rows={10}></textarea>
+																									rows={10}
+																									name='note'
+																									onChange={
+																										handleNoteChange
+																									}></textarea>
 																							</div>
 																							<button
 																								type='button'
@@ -865,4 +917,4 @@ const handleMarkLessonAsCompleted = (variantItemId:any) => {
 	);
 }
 
-export default CourseDetail
+export default CourseDetail;
