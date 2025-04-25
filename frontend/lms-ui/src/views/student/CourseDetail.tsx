@@ -371,7 +371,8 @@ function CourseDetail() {
 																						/>
 																					</div>
 																					<div className='modal-body'>
-																						<form onSubmit={handleSubmitCreateNote}>
+																						<form
+																							onSubmit={handleSubmitCreateNote}>
 																							<div className='mb-3'>
 																								<label
 																									htmlFor='exampleInputEmail1'
@@ -393,7 +394,6 @@ function CourseDetail() {
 																								</label>
 																								<textarea
 																									className='form-control'
-																						
 																									id=''
 																									cols={30}
 																									rows={10}
@@ -424,45 +424,35 @@ function CourseDetail() {
 																</div>
 																<div className='card-body p-0 pt-3'>
 																	{/* Note item start */}
-																	<div className='row g-4 p-3'>
-																		<div className='col-sm-11 col-xl-11 shadow p-3 m-3 rounded'>
-																			<h5>
-																				{" "}
-																				What is Digital Marketing What is
-																				Digital Marketing
-																			</h5>
-																			<p>
-																				Arranging rapturous did believe him all
-																				had supported. Supposing so be resolving
-																				breakfast am or perfectly. It drew a
-																				hill from me. Valley by oh twenty direct
-																				me so. Departure defective arranging
-																				rapturous did believe him all had
-																				supported. Family months lasted simple
-																				set nature vulgar him. Picture for
-																				attempt joy excited ten carried manners
-																				talking how. Family months lasted simple
-																				set nature vulgar him. Picture for
-																				attempt joy excited ten carried manners
-																				talking how.
-																			</p>
-																			{/* Buttons */}
-																			<div className='hstack gap-3 flex-wrap'>
-																				<a
-																					onClick={handleNoteShow}
-																					className='btn btn-success mb-0'>
-																					<i className='bi bi-pencil-square me-2' />{" "}
-																					Edit
-																				</a>
-																				<a
-																					href='#'
-																					className='btn btn-danger mb-0'>
-																					<i className='bi bi-trash me-2' />{" "}
-																					Delete
-																				</a>
+																	{course?.note?.map((n:any, index:number) => (
+																		<div className='row g-4 p-3'>
+																			<div className='col-sm-11 col-xl-11 shadow p-3 m-3 rounded'>
+																				<h5> {n.title}</h5>
+																				<p>{n.note}</p>
+																				{/* Buttons */}
+																				<div className='hstack gap-3 flex-wrap'>
+																					<a
+																						// onClick={() => handleNoteShow(n)}
+																						className='btn btn-success mb-0'>
+																						<i className='bi bi-pencil-square me-2' />{" "}
+																						Edit
+																					</a>
+																					<a
+																						// onClick={() =>
+																						// 	handleDeleteNote(n.id)
+																						// }
+																						className='btn btn-danger mb-0'>
+																						<i className='bi bi-trash me-2' />{" "}
+																						Delete
+																					</a>
+																				</div>
 																			</div>
 																		</div>
-																	</div>
+																	))}
+
+																	{course?.note?.length < 1 && (
+																		<p className='mt-3 p-3'>No notes</p>
+																	)}
 																	<hr />
 																</div>
 															</div>
