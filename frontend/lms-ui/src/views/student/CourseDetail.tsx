@@ -36,8 +36,9 @@ function CourseDetail() {
 
 	const [noteShow, setNoteShow] = useState(false);
 	const handleNoteClose = () => setNoteShow(false);
-	const handleNoteShow = () => {
+	const handleNoteShow = (note:string) => {
 		setNoteShow(true);
+		setSelectedNote(note)
 	};
 
 	const [ConversationShow, setConversationShow] = useState(false);
@@ -126,6 +127,29 @@ function CourseDetail() {
 			console.log(error);
 		}
 	};
+
+	 const handleSubmitEditNote = (e: React.FormEvent, noteId: string | number) => {
+			e.preventDefault();
+			const formdata = new FormData();
+
+			formdata.append("user_id", UserData()?.user_id);
+			formdata.append("enrollment_id", param.enrollment_id ?? "");
+			formdata.append("title", createNote.title || selectedNote?.title);
+			formdata.append("note", createNote.note || selectedNote?.note);
+
+			useAxios()
+				.patch(
+					`student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`,
+					formdata
+				)
+				.then((res) => {
+					fetchCourseDetail();
+					Toast().fire({
+						icon: "success",
+						title: "Note updated",
+					});
+				});
+		};
 
 	return (
 		<>
@@ -424,31 +448,33 @@ function CourseDetail() {
 																</div>
 																<div className='card-body p-0 pt-3'>
 																	{/* Note item start */}
-																	{course?.note?.map((n:any, index:number) => (
-																		<div className='row g-4 p-3'>
-																			<div className='col-sm-11 col-xl-11 shadow p-3 m-3 rounded'>
-																				<h5> {n.title}</h5>
-																				<p>{n.note}</p>
-																				{/* Buttons */}
-																				<div className='hstack gap-3 flex-wrap'>
-																					<a
-																						// onClick={() => handleNoteShow(n)}
-																						className='btn btn-success mb-0'>
-																						<i className='bi bi-pencil-square me-2' />{" "}
-																						Edit
-																					</a>
-																					<a
-																						// onClick={() =>
-																						// 	handleDeleteNote(n.id)
-																						// }
-																						className='btn btn-danger mb-0'>
-																						<i className='bi bi-trash me-2' />{" "}
-																						Delete
-																					</a>
+																	{course?.note?.map(
+																		(n: any, index: number) => (
+																			<div className='row g-4 p-3'>
+																				<div className='col-sm-11 col-xl-11 shadow p-3 m-3 rounded'>
+																					<h5> {n.title}</h5>
+																					<p>{n.note}</p>
+																					{/* Buttons */}
+																					<div className='hstack gap-3 flex-wrap'>
+																						<a
+																							onClick={() => handleNoteShow(n)}
+																							className='btn btn-success mb-0'>
+																							<i className='bi bi-pencil-square me-2' />{" "}
+																							Edit
+																						</a>
+																						<a
+																							// onClick={() =>
+																							// 	handleDeleteNote(n.id)
+																							// }
+																							className='btn btn-danger mb-0'>
+																							<i className='bi bi-trash me-2' />{" "}
+																							Delete
+																						</a>
+																					</div>
 																				</div>
 																			</div>
-																		</div>
-																	))}
+																		)
+																	)}
 
 																	{course?.note?.length < 1 && (
 																		<p className='mt-3 p-3'>No notes</p>
@@ -629,10 +655,10 @@ function CourseDetail() {
 				size='lg'
 				onHide={handleNoteClose}>
 				<Modal.Header closeButton>
-					<Modal.Title>Note: Note Title</Modal.Title>
+					<Modal.Title>Note: {selectedNote?.title}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					<form>
+					<form onSubmit={(e) => handleSubmitEditNote(e, selectedNote?.id)}>
 						<div className='mb-3'>
 							<label
 								htmlFor='exampleInputEmail1'
@@ -640,8 +666,9 @@ function CourseDetail() {
 								Note Title
 							</label>
 							<input
-								defaultValue=''
+								defaultValue={selectedNote?.title}
 								name='title'
+								onChange={handleNoteChange}
 								type='text'
 								className='form-control'
 							/>
@@ -653,8 +680,9 @@ function CourseDetail() {
 								Note Content
 							</label>
 							<textarea
-								defaultValue=''
+								defaultValue={selectedNote?.note}
 								name='note'
+								onChange={handleNoteChange}
 								className='form-control'
 								cols={30}
 								rows={10}></textarea>
@@ -680,7 +708,7 @@ function CourseDetail() {
 				size='lg'
 				onHide={handleConversationClose}>
 				<Modal.Header closeButton>
-					<Modal.Title>Lesson: 123</Modal.Title>
+					<Modal.Title>Note: {selectedNote?.title}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
 					<div className='border p-2 p-sm-4 rounded-3'>
