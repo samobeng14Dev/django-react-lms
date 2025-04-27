@@ -11,6 +11,7 @@ import Header from "./Partials/Header";
 import UserData from "../plugin/UserData";
 import useAxios from "../../utils/useAxios";
 import Toast from "../plugin/Toast";
+import moment from "moment";
 
 function CourseDetail() {
 	const [course, setCourse] = useState<any>([]);
@@ -21,13 +22,16 @@ function CourseDetail() {
 	const [createNote, setCreateNote] = useState<{ title: string; note: string }>(
 		{ title: "", note: "" }
 	);
-	
-	const [selectedNote, setSelectedNote] = useState<any>(null);
-	const [createMessage, setCreateMessage] = useState<{ title: string;  message:string}>({
-			title: "",
-			message: "",
-		});
 
+	const [selectedNote, setSelectedNote] = useState<any>(null);
+	const [createMessage, setCreateMessage] = useState<{
+		title: string;
+		message: string;
+	}>({
+		title: "",
+		message: "",
+	});
+	const [questions, setQuestions] = useState<any>([]);
 
 	const param = useParams<{ enrollment_id: string }>();
 
@@ -42,14 +46,14 @@ function CourseDetail() {
 
 	const [noteShow, setNoteShow] = useState(false);
 	const handleNoteClose = () => setNoteShow(false);
-	const handleNoteShow = (note:string) => {
+	const handleNoteShow = (note: string) => {
 		setNoteShow(true);
-		setSelectedNote(note)
+		setSelectedNote(note);
 	};
 
 	const [ConversationShow, setConversationShow] = useState(false);
 	const handleConversationClose = () => setConversationShow(false);
-	const handleConversationShow = (converation:any) => {
+	const handleConversationShow = (converation: any) => {
 		setConversationShow(true);
 		// setSelectedConversation(converation);
 	};
@@ -58,7 +62,7 @@ function CourseDetail() {
 	const handleQuestionClose = () => setAddQuestionShow(false);
 	const handleQuestionShow = () => setAddQuestionShow(true);
 
-
+	
 
 	const fetchCourseDetail = async () => {
 		useAxios()
@@ -67,7 +71,7 @@ function CourseDetail() {
 			)
 			.then((res) => {
 				setCourse(res.data);
-				// setQuestions(res.data.question_answer);
+				setQuestions(res.data.question_answer);
 				// setStudentReview(res.data.review);
 				const percentageCompleted =
 					(res.data.completed_lesson?.length / res.data.lectures?.length) * 100;
@@ -121,7 +125,6 @@ function CourseDetail() {
 		formdata.append("title", createNote.title ?? "");
 		formdata.append("note", createNote.note ?? "");
 
-
 		try {
 			await useAxios()
 				.post(
@@ -141,30 +144,33 @@ function CourseDetail() {
 		}
 	};
 
-	 const handleSubmitEditNote = (e: React.FormEvent, noteId: string | number) => {
-			e.preventDefault();
-			const formdata = new FormData();
+	const handleSubmitEditNote = (
+		e: React.FormEvent,
+		noteId: string | number
+	) => {
+		e.preventDefault();
+		const formdata = new FormData();
 
-			formdata.append("user_id", UserData()?.user_id);
-			formdata.append("enrollment_id", param.enrollment_id ?? "");
-			formdata.append("title", createNote.title || selectedNote?.title);
-			formdata.append("note", createNote.note || selectedNote?.note);
+		formdata.append("user_id", UserData()?.user_id);
+		formdata.append("enrollment_id", param.enrollment_id ?? "");
+		formdata.append("title", createNote.title || selectedNote?.title);
+		formdata.append("note", createNote.note || selectedNote?.note);
 
-			useAxios()
-				.patch(
-					`student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`,
-					formdata
-				)
-				.then((res) => {
-					fetchCourseDetail();
-					Toast().fire({
-						icon: "success",
-						title: "Note updated",
-					});
+		useAxios()
+			.patch(
+				`student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`,
+				formdata
+			)
+			.then((res) => {
+				fetchCourseDetail();
+				Toast().fire({
+					icon: "success",
+					title: "Note updated",
 				});
+			});
 	};
-	
-	const handleDeleteNote = (noteId:string) => {
+
+	const handleDeleteNote = (noteId: string) => {
 		useAxios()
 			.delete(
 				`student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`
@@ -178,36 +184,38 @@ function CourseDetail() {
 			});
 	};
 
-	 const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-			setCreateMessage({
-				...createMessage,
-				[event.target.name]: event.target.value,
-			});
-		};
+	const handleMessageChange = (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => {
+		setCreateMessage({
+			...createMessage,
+			[event.target.name]: event.target.value,
+		});
+	};
 
-		const handleSaveQuestion = async (e: React.FormEvent) => {
-			e.preventDefault();
-			const formdata = new FormData();
+	const handleSaveQuestion = async (e: React.FormEvent) => {
+		e.preventDefault();
+		const formdata = new FormData();
 
-			formdata.append("course_id", course.course?.id);
-			formdata.append("user_id", UserData()?.user_id);
-			formdata.append("title", createMessage.title);
-			formdata.append("message", createMessage.message);
+		formdata.append("course_id", course.course?.id);
+		formdata.append("user_id", UserData()?.user_id);
+		formdata.append("title", createMessage.title);
+		formdata.append("message", createMessage.message);
 
-			await useAxios()
-				.post(
-					`student/question-answer-list-create/${course.course?.id}/`,
-					formdata
-				)
-				.then((res) => {
-					fetchCourseDetail();
-					handleQuestionClose();
-					Toast().fire({
-						icon: "success",
-						title: "Question sent",
-					});
+		await useAxios()
+			.post(
+				`student/question-answer-list-create/${course.course?.id}/`,
+				formdata
+			)
+			.then((res) => {
+				fetchCourseDetail();
+				handleQuestionClose();
+				Toast().fire({
+					icon: "success",
+					title: "Question sent",
 				});
-		};
+			});
+	};
 
 	return (
 		<>
@@ -583,42 +591,42 @@ function CourseDetail() {
 																<div className='card-body p-0 pt-3'>
 																	<div className='vstack gap-3 p-3'>
 																		{/* Question item START */}
-																		<div className='shadow rounded-3 p-3'>
-																			<div className='d-sm-flex justify-content-sm-between mb-3'>
-																				<div className='d-flex align-items-center'>
-																					<div className='avatar avatar-sm flex-shrink-0'>
-																						<img
-																							src='https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg'
-																							className='avatar-img rounded-circle'
-																							alt='avatar'
-																							style={{
-																								width: "60px",
-																								height: "60px",
-																								borderRadius: "50%",
-																								objectFit: "cover",
-																							}}
-																						/>
-																					</div>
-																					<div className='ms-2'>
-																						<h6 className='mb-0'>
-																							<a
-																								href='#'
-																								className='text-decoration-none text-dark'>
-																								Angelina Poi
-																							</a>
-																						</h6>
-																						<small>Asked 10 Hours ago</small>
+
+																		{questions?.map((q: any, index: number) => (
+																			<div
+																				className='shadow rounded-3 p-3'
+																				key={index}>
+																				<div className='d-sm-flex justify-content-sm-between mb-3'>
+																					<div className='d-flex align-items-center'>
+																						<div className='avatar avatar-sm flex-shrink-0'></div>
+																						<div className='ms-2'>
+																							<h6 className='mb-0'>
+																								<img
+																									src={q.profile.image}
+																									alt={q.profile?.full_name || "Unknown User"}
+																									className='text-decoration-none text-dark'
+																									style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+																								/>
+																							</h6>
+																							<small>
+																								{moment(q.date).format(
+																									"DD MMM, YYYY"
+																								)}
+																							</small>
+																						</div>
 																					</div>
 																				</div>
+																				<h5>{q.title}</h5>
+																				<button
+																					className='btn btn-primary btn-sm mb-3 mt-3'
+																					onClick={() =>
+																						handleConversationShow(q)
+																					}>
+																					Join Conversation{" "}
+																					<i className='fas fa-arrow-right'></i>
+																				</button>
 																			</div>
-																			<h5>How can i fix this bug?</h5>
-																			<button
-																				className='btn btn-primary btn-sm mb-3 mt-3'
-																				onClick={handleConversationShow}>
-																				Join Conversation{" "}
-																				<i className='fas fa-arrow-right'></i>
-																			</button>
-																		</div>
+																		))}
 																	</div>
 																</div>
 															</div>
