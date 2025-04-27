@@ -21,7 +21,13 @@ function CourseDetail() {
 	const [createNote, setCreateNote] = useState<{ title: string; note: string }>(
 		{ title: "", note: "" }
 	);
+	
 	const [selectedNote, setSelectedNote] = useState<any>(null);
+	const [createMessage, setCreateMessage] = useState<{ title: string;  message:string}>({
+			title: "",
+			message: "",
+		});
+
 
 	const param = useParams<{ enrollment_id: string }>();
 
@@ -43,9 +49,16 @@ function CourseDetail() {
 
 	const [ConversationShow, setConversationShow] = useState(false);
 	const handleConversationClose = () => setConversationShow(false);
-	const handleConversationShow = () => {
+	const handleConversationShow = (converation:any) => {
 		setConversationShow(true);
+		// setSelectedConversation(converation);
 	};
+
+	const [addQuestionShow, setAddQuestionShow] = useState(false);
+	const handleQuestionClose = () => setAddQuestionShow(false);
+	const handleQuestionShow = () => setAddQuestionShow(true);
+
+
 
 	const fetchCourseDetail = async () => {
 		useAxios()
@@ -147,6 +160,51 @@ function CourseDetail() {
 					Toast().fire({
 						icon: "success",
 						title: "Note updated",
+					});
+				});
+	};
+	
+	const handleDeleteNote = (noteId:string) => {
+		useAxios()
+			.delete(
+				`student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`
+			)
+			.then((res) => {
+				fetchCourseDetail();
+				Toast().fire({
+					icon: "success",
+					title: "Note deleted",
+				});
+			});
+	};
+
+	 const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+			setCreateMessage({
+				...createMessage,
+				[event.target.name]: event.target.value,
+			});
+		};
+
+		const handleSaveQuestion = async (e: React.FormEvent) => {
+			e.preventDefault();
+			const formdata = new FormData();
+
+			formdata.append("course_id", course.course?.id);
+			formdata.append("user_id", UserData()?.user_id);
+			formdata.append("title", createMessage.title);
+			formdata.append("message", createMessage.message);
+
+			await useAxios()
+				.post(
+					`student/question-answer-list-create/${course.course?.id}/`,
+					formdata
+				)
+				.then((res) => {
+					fetchCourseDetail();
+					handleQuestionClose();
+					Toast().fire({
+						icon: "success",
+						title: "Question sent",
 					});
 				});
 		};
@@ -463,9 +521,9 @@ function CourseDetail() {
 																							Edit
 																						</a>
 																						<a
-																							// onClick={() =>
-																							// 	handleDeleteNote(n.id)
-																							// }
+																							onClick={() =>
+																								handleDeleteNote(n.id)
+																							}
 																							className='btn btn-danger mb-0'>
 																							<i className='bi bi-trash me-2' />{" "}
 																							Delete
@@ -512,7 +570,7 @@ function CourseDetail() {
 																		</div>
 																		<div className='col-sm-6 col-lg-3'>
 																			<a
-																				href='#'
+																				onClick={handleQuestionShow}
 																				className='btn btn-primary mb-0 w-100'
 																				data-bs-toggle='modal'
 																				data-bs-target='#modalCreatePost'>
@@ -702,7 +760,7 @@ function CourseDetail() {
 				</Modal.Body>
 			</Modal>
 
-			{/* Note Edit Modal */}
+			{/* Conversation Modal */}
 			<Modal
 				show={ConversationShow}
 				size='lg'
@@ -927,6 +985,60 @@ function CourseDetail() {
 							</button>
 						</form>
 					</div>
+				</Modal.Body>
+			</Modal>
+
+			{/* Ask Question Modal */}
+			{/* Note Edit Modal */}
+			<Modal
+				show={addQuestionShow}
+				size='lg'
+				onHide={handleQuestionClose}>
+				<Modal.Header closeButton>
+					<Modal.Title>Ask Question</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<form onSubmit={handleSaveQuestion}>
+						<div className='mb-3'>
+							<label
+								htmlFor='exampleInputEmail1'
+								className='form-label'>
+								Question Title
+							</label>
+							<input
+								value={createMessage.title}
+								name='title'
+								onChange={handleMessageChange}
+								type='text'
+								className='form-control'
+							/>
+						</div>
+						<div className='mb-3'>
+							<label
+								htmlFor='exampleInputPassword1'
+								className='form-label'>
+								Question Message
+							</label>
+							<textarea
+								value={createMessage.message}
+								name='message'
+								onChange={handleMessageChange}
+								className='form-control'
+								cols={30}
+								rows={10}></textarea>
+						</div>
+						<button
+							type='button'
+							className='btn btn-secondary me-2'
+							onClick={handleQuestionClose}>
+							<i className='fas fa-arrow-left'></i> Close
+						</button>
+						<button
+							type='submit'
+							className='btn btn-primary'>
+							Send Message <i className='fas fa-check-circle'></i>
+						</button>
+					</form>
 				</Modal.Body>
 			</Modal>
 
