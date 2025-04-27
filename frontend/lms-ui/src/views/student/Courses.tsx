@@ -10,22 +10,24 @@ import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
 
 function Courses() {
-		const [course, setCourse] = useState<any>([]);
-		const [stats, setStats] = useState<any>([]);
+	const [course, setCourse] = useState<any>([]);
+	const [stats, setStats] = useState<any>([]);
 	const [fetching, setFetching] = useState(true);
-const fetchData = () => {
-	setFetching(true);
+	const fetchData = () => {
+		setFetching(true);
 
-	useAxios().get(`student/course-list/${UserData()?.user_id}/`).then((res) => {
-		console.log(res.data);
-		setCourse(res.data);
-		setFetching(false);
-	});
-};
+		useAxios()
+			.get(`student/course-list/${UserData()?.user_id}/`)
+			.then((res) => {
+				console.log(res.data);
+				setCourse(res.data);
+				setFetching(false);
+			});
+	};
 
-useEffect(() => {
-	fetchData();
-}, []);
+	useEffect(() => {
+		fetchData();
+	}, []);
 
 	const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const query = event.target.value.toLowerCase();
@@ -92,7 +94,7 @@ useEffect(() => {
 												</tr>
 											</thead>
 											<tbody>
-												{course?.map((c:any, index:any) => (
+												{course?.map((c: any, index: any) => (
 													<tr>
 														<td>
 															<div className='d-flex align-items-center'>
@@ -152,17 +154,21 @@ useEffect(() => {
 														</td>
 														<td>
 															{c.completed_lesson?.length < 1 && (
-																<button className='btn btn-success btn-sm mt-3'>
+																<Link
+																	to={`/student/courses/${c.enrollment_id}/`}
+																	className='btn btn-success btn-sm mt-3'>
 																	start Course
 																	<i className='fas fa-arrow-right ms-2'></i>
-																</button>
+																</Link>
 															)}
 
 															{c.completed_lesson?.length > 0 && (
-																<button className='btn btn-primary btn-sm mt-3'>
+																<Link
+																	to={`/student/courses/${c.enrollment_id}/`}
+																	className='btn btn-primary btn-sm mt-3'>
 																	Continue Course
 																	<i className='fas fa-arrow-right ms-2'></i>
-																</button>
+																</Link>
 															)}
 														</td>
 													</tr>

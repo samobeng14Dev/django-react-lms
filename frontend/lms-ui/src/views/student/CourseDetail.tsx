@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ReactPlayer from "react-player";
 import Button from "react-bootstrap/Button";
@@ -32,8 +32,10 @@ function CourseDetail() {
 		message: "",
 	});
 	const [questions, setQuestions] = useState<any>([]);
+	const [selectedConversation, setSelectedConversation] = useState<any>(null);
 
 	const param = useParams<{ enrollment_id: string }>();
+	 const lastElementRef = useRef<HTMLDivElement>(null);
 
 	// console.log('param' ,param,);
 	const [show, setShow] = useState(false);
@@ -55,7 +57,7 @@ function CourseDetail() {
 	const handleConversationClose = () => setConversationShow(false);
 	const handleConversationShow = (converation: any) => {
 		setConversationShow(true);
-		// setSelectedConversation(converation);
+		setSelectedConversation(converation);
 	};
 
 	const [addQuestionShow, setAddQuestionShow] = useState(false);
@@ -216,6 +218,27 @@ function CourseDetail() {
 				});
 			});
 	};
+
+	  const sendNewMessage = async (e: React.FormEvent) => {
+			e.preventDefault();
+			const formdata = new FormData();
+			formdata.append("course_id", course.course?.id);
+			formdata.append("user_id", UserData()?.user_id);
+			formdata.append("message", createMessage.message);
+			formdata.append("qa_id", selectedConversation?.qa_id);
+
+			useAxios()
+				.post(`student/question-answer-message-create/`, formdata)
+				.then((res) => {
+					setSelectedConversation(res.data.question);
+				});
+		};
+
+		useEffect(() => {
+			if (lastElementRef.current) {
+				lastElementRef.current.scrollIntoView({ behavior: "smooth" });
+			}
+		}, [selectedConversation]);
 
 	return (
 		<>
@@ -603,9 +626,16 @@ function CourseDetail() {
 																							<h6 className='mb-0'>
 																								<img
 																									src={q.profile.image}
-																									alt={q.profile?.full_name || "Unknown User"}
+																									alt={
+																										q.profile?.full_name ||
+																										"Unknown User"
+																									}
 																									className='text-decoration-none text-dark'
-																									style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+																									style={{
+																										width: "40px",
+																										height: "40px",
+																										borderRadius: "50%",
+																									}}
 																								/>
 																							</h6>
 																							<small>
@@ -774,192 +804,48 @@ function CourseDetail() {
 				size='lg'
 				onHide={handleConversationClose}>
 				<Modal.Header closeButton>
-					<Modal.Title>Note: {selectedNote?.title}</Modal.Title>
+					<Modal.Title>Note: {selectedConversation?.title}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
 					<div className='border p-2 p-sm-4 rounded-3'>
 						<ul
 							className='list-unstyled mb-0'
 							style={{ overflowY: "scroll", height: "500px" }}>
-							<li className='comment-item mb-3'>
-								<div className='d-flex'>
-									<div className='avatar avatar-sm flex-shrink-0'>
-										<a href='#'>
-											<img
-												className='avatar-img rounded-circle'
-												src='https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg'
-												style={{
-													width: "40px",
-													height: "40px",
-													borderRadius: "50%",
-													objectFit: "cover",
-												}}
-												alt='womans image'
-											/>
-										</a>
-									</div>
-									<div className='ms-2'>
-										{/* Comment by */}
-										<div className='bg-light p-3 rounded w-100'>
-											<div className='d-flex w-100 justify-content-center'>
-												<div className='me-2 '>
-													<h6 className='mb-1 lead fw-bold'>
-														<a
-															href='#!'
-															className='text-decoration-none text-dark'>
-															{" "}
-															Louis Ferguson{" "}
-														</a>
-														<br />
-														<span style={{ fontSize: "12px", color: "gray" }}>
-															5hrs Ago
-														</span>
-													</h6>
-													<p className='mb-0 mt-3  '>
-														Removed demands expense account
-													</p>
+							{selectedConversation?.messages?.map((m: any, index: number) => (
+								<li className='comment-item mb-3'>
+									<div className='d-flex'>
+										<div className='ms-2'>
+											{/* Comment by */}
+											<div className='bg-light p-3 rounded w-100'>
+												<div className='d-flex w-100 justify-content-center'>
+													<div className='me-2 '>
+														<h6 className='mb-1 lead fw-bold'>
+															<a
+																// src={m.profile?.image}
+																className='text-decoration-none text-dark'>
+																{" "}
+																{m.profile.full_name}{" "}
+															</a>
+															<br />
+															<span style={{ fontSize: "12px", color: "gray" }}>
+																{moment(m.date).format("DD MMM, YYYY")}
+															</span>
+														</h6>
+														<p className='mb-0 mt-3  '>{m.message}</p>
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-							</li>
+								</li>
+							))}
 
-							<li className='comment-item mb-3'>
-								<div className='d-flex'>
-									<div className='avatar avatar-sm flex-shrink-0'>
-										<a href='#'>
-											<img
-												className='avatar-img rounded-circle'
-												src='https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg'
-												style={{
-													width: "40px",
-													height: "40px",
-													borderRadius: "50%",
-													objectFit: "cover",
-												}}
-												alt='womans image'
-											/>
-										</a>
-									</div>
-									<div className='ms-2'>
-										{/* Comment by */}
-										<div className='bg-light p-3 rounded w-100'>
-											<div className='d-flex w-100 justify-content-center'>
-												<div className='me-2 '>
-													<h6 className='mb-1 lead fw-bold'>
-														<a
-															href='#!'
-															className='text-decoration-none text-dark'>
-															{" "}
-															Louis Ferguson{" "}
-														</a>
-														<br />
-														<span style={{ fontSize: "12px", color: "gray" }}>
-															5hrs Ago
-														</span>
-													</h6>
-													<p className='mb-0 mt-3  '>
-														Removed demands expense account from the debby
-														building in a hall town tak with
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</li>
-
-							<li className='comment-item mb-3'>
-								<div className='d-flex'>
-									<div className='avatar avatar-sm flex-shrink-0'>
-										<a href='#'>
-											<img
-												className='avatar-img rounded-circle'
-												src='https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg'
-												style={{
-													width: "40px",
-													height: "40px",
-													borderRadius: "50%",
-													objectFit: "cover",
-												}}
-												alt='womans image'
-											/>
-										</a>
-									</div>
-									<div className='ms-2'>
-										{/* Comment by */}
-										<div className='bg-light p-3 rounded w-100'>
-											<div className='d-flex w-100 justify-content-center'>
-												<div className='me-2 '>
-													<h6 className='mb-1 lead fw-bold'>
-														<a
-															href='#!'
-															className='text-decoration-none text-dark'>
-															{" "}
-															Louis Ferguson{" "}
-														</a>
-														<br />
-														<span style={{ fontSize: "12px", color: "gray" }}>
-															5hrs Ago
-														</span>
-													</h6>
-													<p className='mb-0 mt-3  '>
-														Removed demands expense account
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</li>
-
-							<li className='comment-item mb-3'>
-								<div className='d-flex'>
-									<div className='avatar avatar-sm flex-shrink-0'>
-										<a href='#'>
-											<img
-												className='avatar-img rounded-circle'
-												src='https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-3.jpg'
-												style={{
-													width: "40px",
-													height: "40px",
-													borderRadius: "50%",
-													objectFit: "cover",
-												}}
-												alt='womans image'
-											/>
-										</a>
-									</div>
-									<div className='ms-2'>
-										{/* Comment by */}
-										<div className='bg-light p-3 rounded w-100'>
-											<div className='d-flex w-100 justify-content-center'>
-												<div className='me-2 '>
-													<h6 className='mb-1 lead fw-bold'>
-														<a
-															href='#!'
-															className='text-decoration-none text-dark'>
-															{" "}
-															Louis Ferguson{" "}
-														</a>
-														<br />
-														<span style={{ fontSize: "12px", color: "gray" }}>
-															5hrs Ago
-														</span>
-													</h6>
-													<p className='mb-0 mt-3  '>
-														Removed demands expense account
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</li>
+							<div ref={lastElementRef}></div>
 						</ul>
 
-						<form className='w-100 d-flex'>
+						<form
+							className='w-100 d-flex'
+							onSubmit={sendNewMessage}>
 							<textarea
 								name='message'
 								className='one form-control pe-4 bg-light w-75'
