@@ -35,7 +35,7 @@ function CourseDetail() {
 	const [selectedConversation, setSelectedConversation] = useState<any>(null);
 
 	const param = useParams<{ enrollment_id: string }>();
-	 const lastElementRef = useRef<HTMLDivElement>(null);
+	const lastElementRef = useRef<HTMLDivElement>(null);
 
 	// console.log('param' ,param,);
 	const [show, setShow] = useState(false);
@@ -63,8 +63,6 @@ function CourseDetail() {
 	const [addQuestionShow, setAddQuestionShow] = useState(false);
 	const handleQuestionClose = () => setAddQuestionShow(false);
 	const handleQuestionShow = () => setAddQuestionShow(true);
-
-	
 
 	const fetchCourseDetail = async () => {
 		useAxios()
@@ -219,26 +217,26 @@ function CourseDetail() {
 			});
 	};
 
-	  const sendNewMessage = async (e: React.FormEvent) => {
-			e.preventDefault();
-			const formdata = new FormData();
-			formdata.append("course_id", course.course?.id);
-			formdata.append("user_id", UserData()?.user_id);
-			formdata.append("message", createMessage.message);
-			formdata.append("qa_id", selectedConversation?.qa_id);
+	const sendNewMessage = async (e: React.FormEvent) => {
+		e.preventDefault();
+		const formdata = new FormData();
+		formdata.append("course_id", course.course?.id);
+		formdata.append("user_id", UserData()?.user_id);
+		formdata.append("message", createMessage.message);
+		formdata.append("qa_id", selectedConversation?.qa_id);
 
-			useAxios()
-				.post(`student/question-answer-message-create/`, formdata)
-				.then((res) => {
-					setSelectedConversation(res.data.question);
-				});
-		};
+		useAxios()
+			.post(`student/question-answer-message-create/`, formdata)
+			.then((res) => {
+				setSelectedConversation(res.data.question);
+			});
+	};
 
-		useEffect(() => {
-			if (lastElementRef.current) {
-				lastElementRef.current.scrollIntoView({ behavior: "smooth" });
-			}
-		}, [selectedConversation]);
+	useEffect(() => {
+		if (lastElementRef.current) {
+			lastElementRef.current.scrollIntoView({ behavior: "smooth" });
+		}
+	}, [selectedConversation]);
 
 	return (
 		<>
@@ -821,7 +819,7 @@ function CourseDetail() {
 													<div className='me-2 '>
 														<h6 className='mb-1 lead fw-bold'>
 															<a
-																// src={m.profile?.image}
+																
 																className='text-decoration-none text-dark'>
 																{" "}
 																{m.profile.full_name}{" "}
@@ -851,15 +849,16 @@ function CourseDetail() {
 								className='one form-control pe-4 bg-light w-75'
 								id='autoheighttextarea'
 								rows={2}
+								onChange={handleMessageChange}
 								placeholder="What's your question?"></textarea>
 							<button
 								className='btn btn-primary ms-2 mb-0 w-25'
-								type='button'>
+								type='submit'>
 								Post <i className='fas fa-paper-plane'></i>
 							</button>
 						</form>
 
-						<form className='w-100'>
+						{/* <form className='w-100'>
 							<input
 								name='title'
 								type='text'
@@ -877,7 +876,7 @@ function CourseDetail() {
 								type='button'>
 								Post <i className='fas fa-paper-plane'></i>
 							</button>
-						</form>
+						</form> */}
 					</div>
 				</Modal.Body>
 			</Modal>
