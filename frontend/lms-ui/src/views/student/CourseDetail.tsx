@@ -238,6 +238,70 @@ function CourseDetail() {
 		}
 	}, [selectedConversation]);
 
+
+	const handleSearchQuestion = (event: { target: { value: string; }; }) => {
+		const query = event.target.value.toLowerCase();
+		if (query === "") {
+			fetchCourseDetail();
+		} else {
+			const filtered = questions?.filter((question: { title: string; }) => {
+				return question.title.toLowerCase().includes(query);
+			});
+			setQuestions(filtered);
+		}
+	};
+
+	// const handleReviewChange = (event) => {
+	// 	setCreateReview({
+	// 		...createReview,
+	// 		[event.target.name]: event.target.value,
+	// 	});
+	// };
+
+	// const handleCreateReviewSubmit = (e) => {
+	// 	e.preventDefault();
+
+	// 	const formdata = new FormData();
+	// 	formdata.append("course_id", course.course?.id);
+	// 	formdata.append("user_id", UserData()?.user_id);
+	// 	formdata.append("rating", createReview?.rating);
+	// 	formdata.append("review", createReview?.review);
+
+	// 	useAxios.post(`student/rate-course/`, formdata).then((res) => {
+	// 		console.log(res.data);
+	// 		fetchCourseDetail();
+	// 		Toast().fire({
+	// 			icon: "success",
+	// 			title: "Review created",
+	// 		});
+	// 	});
+	// };
+
+	// const handleUpdateReviewSubmit = (e) => {
+	// 	e.preventDefault();
+
+	// 	const formdata = new FormData();
+	// 	formdata.append("course", course.course?.id);
+	// 	formdata.append("user", UserData()?.user_id);
+	// 	formdata.append("rating", createReview?.rating || studentReview?.rating);
+	// 	formdata.append("review", createReview?.review || studentReview?.review);
+
+	// 	useAxios
+	// 		.patch(
+	// 			`student/review-detail/${UserData()?.user_id}/${studentReview?.id}/`,
+	// 			formdata
+	// 		)
+	// 		.then((res) => {
+	// 			console.log(res.data);
+	// 			fetchCourseDetail();
+	// 			Toast().fire({
+	// 				icon: "success",
+	// 				title: "Review updated",
+	// 			});
+	// 		});
+	// };
+
+
 	return (
 		<>
 			<BaseHeader />
@@ -589,6 +653,7 @@ function CourseDetail() {
 																					type='search'
 																					placeholder='Search'
 																					aria-label='Search'
+																					onChange={handleSearchQuestion}
 																				/>
 																				<button
 																					className='bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset'
