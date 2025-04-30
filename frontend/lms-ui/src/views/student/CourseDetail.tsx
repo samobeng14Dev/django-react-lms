@@ -74,7 +74,7 @@ function CourseDetail() {
 			.then((res) => {
 				setCourse(res.data);
 				setQuestions(res.data.question_answer);
-				// setStudentReview(res.data.review);
+				setStudentReview(res.data.review);
 				const percentageCompleted =
 					(res.data.completed_lesson?.length / res.data.lectures?.length) * 100;
 				setCompletedPercentage(parseFloat(percentageCompleted?.toFixed(0)));
@@ -279,21 +279,14 @@ function CourseDetail() {
 		});
 	};
 
-	
-	const handleUpdateReviewSubmit = (e: React.FormEvent): void => {
+	const handleUpdateReviewSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 
 		const formdata = new FormData();
-		formdata.append("course", course.course?.id?.toString() || "");
-		formdata.append("user", UserData()?.user_id?.toString() || "");
-		formdata.append(
-			"rating",
-			(createReview?.rating || studentReview?.rating)?.toString() || ""
-		);
-		formdata.append(
-			"review",
-			createReview?.review || studentReview?.review || ""
-		);
+		formdata.append("course", course.course?.id);
+		formdata.append("user", UserData()?.user_id);
+		formdata.append("rating", createReview?.rating || studentReview?.rating);
+		formdata.append("review", createReview?.review || studentReview?.review);
 
 		useAxios()
 			.patch(
@@ -309,7 +302,6 @@ function CourseDetail() {
 				});
 			});
 	};
-
 
 	return (
 		<>
