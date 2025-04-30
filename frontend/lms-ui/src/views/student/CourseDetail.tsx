@@ -279,13 +279,7 @@ function CourseDetail() {
 		});
 	};
 
-	interface ReviewData {
-		course: number | undefined;
-		user: number | undefined;
-		rating: number | undefined;
-		review: string | undefined;
-	}
-
+	
 	const handleUpdateReviewSubmit = (e: React.FormEvent): void => {
 		e.preventDefault();
 
@@ -302,7 +296,7 @@ function CourseDetail() {
 		);
 
 		useAxios()
-			.patch<ReviewData>(
+			.patch(
 				`student/review-detail/${UserData()?.user_id}/${studentReview?.id}/`,
 				formdata
 			)
