@@ -20,6 +20,7 @@ import UserData from "./views/plugin/UserData";
 import CartID from "./views/plugin/CartID";
 import useAxios from "./utils/useAxios";
 import Checkout from "./views/base/Checkout";
+import Wishlist from "./views/student/Wishlist";
 
 const App: React.FC = () => {
 	const [cartCount, setCartCount] = useState(0);
@@ -97,6 +98,14 @@ const App: React.FC = () => {
 							element={
 								<PrivateRoute>
 									<StudentCourseDetail />
+								</PrivateRoute>
+							}
+						/>
+						<Route
+							path='/student/wishlist/'
+							element={
+								<PrivateRoute>
+									<Wishlist />
 								</PrivateRoute>
 							}
 						/>

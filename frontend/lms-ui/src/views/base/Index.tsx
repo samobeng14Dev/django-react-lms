@@ -28,7 +28,7 @@ function Index() {
 		setIsLoading(true);
 		try {
 			const response = await axiosInstance.get("/core/course-list/");
-			// console.log('fetching courses',response.data);
+			console.log('fetching courses',response.data);
 			setCourses(response.data);
 			setIsLoading(false);
 		} catch (error) {
