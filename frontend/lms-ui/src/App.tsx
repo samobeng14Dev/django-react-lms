@@ -14,114 +14,141 @@ import CourseDetail from "./views/base/CourseDetail";
 import StudentCourses from "./views/student/Courses";
 import StudentCourseDetail from "./views/student/CourseDetail";
 import Cart from "./views/base/Cart";
-import { CartContext } from "./views/plugin/Context";
+import { CartContext, ProfileContext } from "./views/plugin/Context";
 import apiInstance from "./utils/axios";
 import UserData from "./views/plugin/UserData";
 import CartID from "./views/plugin/CartID";
 import useAxios from "./utils/useAxios";
 import Checkout from "./views/base/Checkout";
 import Wishlist from "./views/student/Wishlist";
+import StudentProfile from "./views/student/Profile";
 
 const App: React.FC = () => {
 	const [cartCount, setCartCount] = useState(0);
-	const [profile, setProfile] = useState([]);
+	const [profile, setProfile] = useState<any>([]);
 
 	useEffect(() => {
 		apiInstance.get(`course/cart-list/${CartID()}/`).then((res) => {
 			setCartCount(res.data?.length);
 		});
+
+		useAxios().get(`user/profile/${UserData()?.user_id}/`).then((res) => {
+			setProfile(res.data);
+		});
 	}, []);
+
+	
 
 	return (
 		<CartContext.Provider value={[cartCount, setCartCount]}>
-			<BrowserRouter>
-				<MainWrapper>
-					<Routes>
-						<Route
-							path='/register/'
-							element={<Register />}
-						/>
-						<Route
-							path='/login/'
-							element={<Login />}
-						/>
-						<Route
-							path='/logout/'
-							element={<Logout />}
-						/>
-						<Route
-							path='/forgot-password/'
-							element={<ForgotPassword />}
-						/>
-						<Route
-							path='/create-new-password/'
-							element={<CreateNewPassword />}
-						/>
+			<ProfileContext.Provider value={[profile, setProfile]}>
+				<BrowserRouter>
+					<MainWrapper>
+						<Routes>
+							<Route
+								path='/register/'
+								element={<Register />}
+							/>
+							<Route
+								path='/login/'
+								element={<Login />}
+							/>
+							<Route
+								path='/logout/'
+								element={<Logout />}
+							/>
+							<Route
+								path='/forgot-password/'
+								element={<ForgotPassword />}
+							/>
+							<Route
+								path='/create-new-password/'
+								element={<CreateNewPassword />}
+							/>
 
-						{/* Base Route*/}
-						<Route
-							path=''
-							element={<Index />}
-						/>
-						<Route
-							path='/course-detail/:slug'
-							element={<CourseDetail />}
-						/>
-						<Route
-							path='/cart/'
-							element={<Cart />}
-						/>
-						<Route
-							path='/checkout/:order_oid/'
-							element={<Checkout />}
-						/>
+							{/* Base Routes */}
+							<Route
+								path='/'
+								element={<Index />}
+							/>
+							<Route
+								path='/course-detail/:slug/'
+								element={<CourseDetail />}
+							/>
+							<Route
+								path='/cart/'
+								element={<Cart />}
+							/>
+							<Route
+								path='/checkout/:order_oid/'
+								element={<Checkout />}
+							/>
+							{/* <Route
+								path='/payment-success/:order_oid/'
+								element={<Success />}
+							/>
+							<Route
+								path='/search/'
+								element={<Search />}
+							/> */}
 
-						{/* Student Routes */}
-						<Route
-							path='/student/dashboard/'
-							element={
-								<PrivateRoute>
-									<StudentDashboard />
-								</PrivateRoute>
-							}
-						/>
-						<Route
-							path='/student/courses/'
-							element={
-								<PrivateRoute>
-									<StudentCourses />
-								</PrivateRoute>
-							}
-						/>
-						<Route
-							path='/student/courses/:enrollment_id/'
-							element={
-								<PrivateRoute>
-									<StudentCourseDetail />
-								</PrivateRoute>
-							}
-						/>
-						<Route
-							path='/student/wishlist/'
-							element={
-								<PrivateRoute>
-									<Wishlist />
-								</PrivateRoute>
-							}
-						/>
-						<Route
-							path='/student/change-password/'
-							element={
-								<PrivateRoute>
-									<StudentChangePassword />
-								</PrivateRoute>
-							}
-						/>
+							{/* Student Routes */}
+							<Route
+								path='/student/dashboard/'
+								element={
+									<PrivateRoute>
+										<StudentDashboard />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/student/courses/'
+								element={
+									<PrivateRoute>
+										<StudentCourses />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/student/courses/:enrollment_id/'
+								element={
+									<PrivateRoute>
+										<StudentCourseDetail />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/student/wishlist/'
+								element={
+									<PrivateRoute>
+										<Wishlist />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/student/profile/'
+								element={
+									<PrivateRoute>
+										<StudentProfile />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/student/change-password/'
+								element={
+									<PrivateRoute>
+										<StudentChangePassword />
+									</PrivateRoute>
+								}
+							/>
 
-						{/* Private Routes */}
-					</Routes>
-				</MainWrapper>
-			</BrowserRouter>
+							{/* Teacher Routes */}
+
+						
+						</Routes>
+					</MainWrapper>
+				</BrowserRouter>
+			</ProfileContext.Provider>
 		</CartContext.Provider>
 	);
 };

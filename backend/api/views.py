@@ -101,6 +101,7 @@ class PasswordChangeAPIView(generics.UpdateAPIView):
             return Response({'message': 'Password changed successfully'}, status=status.HTTP_201_CREATED)
         else:
             return Response({'message': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        
 
 class ChangePasswordAPIView(generics.CreateAPIView):
     serializer_class=api_serializers.UserSerializer
