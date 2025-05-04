@@ -21,7 +21,7 @@ function Profile() {
 
 	const fetchProfile = () => {
 		useAxios().get(`user/profile/${UserData()?.user_id}/`).then((res) => {
-			console.log(res.data);
+			// console.log(res.data);
 			setProfile(res.data);
 			setProfileData(res.data);
 			setImagePreview(res.data.image);
@@ -76,12 +76,16 @@ function Profile() {
 				},
 			})
 			.then((res) => {
-				console.log(res.data);
-				setProfile(res.data);
+				// console.log(res.data);
+        setProfile(res.data);
+        Toast().fire({
+					icon: "success",
+					title: "Profile updated successfully",
+				});
 			});
 	};
 
-	console.log(imagePreview);
+	// console.log(imagePreview);
 
 	return (
 		<>
