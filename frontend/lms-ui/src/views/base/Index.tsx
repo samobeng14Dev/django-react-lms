@@ -84,6 +84,22 @@ function Index() {
 		}
 	};
 
+	 const addToWishlist = (courseId:any) => {
+			const formdata = new FormData();
+			formdata.append("user_id", UserData()?.user_id);
+			formdata.append("course_id", courseId);
+
+			apiInstance
+				.post(`student/wishlist/${UserData()?.user_id}/`, formdata)
+				.then((res) => {
+					console.log(res.data);
+					Toast().fire({
+						icon: "success",
+						title: res.data.message,
+					});
+				});
+		};
+
 	return (
 		<>
 			<BaseHeader />
@@ -243,7 +259,7 @@ function Index() {
 														</span>
 													</div>
 													<a
-														href='#'
+														onClick={() => addToWishlist(c.id)}
 														className='fs-5'>
 														<i className='fas fa-heart text-danger align-middle' />
 													</a>
