@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from userauths.models import User
+from userauths.models import User, Profile
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -122,6 +122,19 @@ class ChangePasswordAPIView(generics.CreateAPIView):
                 return Response({"message": "Old password is incorrect", "icon": "warning"})
         else:
             return Response({"message": "User does not exists", "icon": "error"})
+
+
+class ProfileAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = api_serializers.ProfileSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        try:
+            user_id = self.kwargs['user_id']
+            user = User.objects.get(id=user_id)
+            return Profile.objects.get(user=user)
+        except:
+            return None
 
 class CategoryListAPIView(generics.ListAPIView):
     queryset = api_models.Category.objects.filter(active=True)
