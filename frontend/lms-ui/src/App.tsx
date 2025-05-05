@@ -22,6 +22,20 @@ import useAxios from "./utils/useAxios";
 import Checkout from "./views/base/Checkout";
 import Wishlist from "./views/student/Wishlist";
 import StudentProfile from "./views/student/Profile";
+import TeacherNotification from "./views/instructor/TeacherNotification";
+import QA from "./views/instructor/QA";
+import Coupon from "./views/instructor/Coupon";
+import Orders from "./views/instructor/Orders";
+import Earning from "./views/instructor/Earning";
+import Students from "./views/instructor/Students";
+import Review from "./views/instructor/Review";
+import Courses from "./views/instructor/Courses";
+import Dashboard from "./views/instructor/Dashboard";
+import ChangePassword from "./views/instructor/ChangePassword";
+import Profile from "./views/instructor/Profile";
+import CourseCreate from "./views/instructor/CourseCreate";
+import CourseEdit from "./views/instructor/CourseEdit";
+import CourseEditCurriculum from "./views/instructor/CourseEditCurriculum"
 
 const App: React.FC = () => {
 	const [cartCount, setCartCount] = useState(0);
@@ -143,9 +157,126 @@ const App: React.FC = () => {
 							/>
 
 							{/* Teacher Routes */}
-							
-
-						
+							<Route
+								path='/instructor/dashboard/'
+								element={
+									<PrivateRoute>
+										<Dashboard />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/dashboard/'
+								element={
+									<PrivateRoute>
+										<Dashboard />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/courses/'
+								element={
+									<PrivateRoute>
+										<Courses />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/reviews/'
+								element={
+									<PrivateRoute>
+										<Review />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/students/'
+								element={
+									<PrivateRoute>
+										<Students />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/earning/'
+								element={
+									<PrivateRoute>
+										<Earning />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/orders/'
+								element={
+									<PrivateRoute>
+										<Orders />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/coupon/'
+								element={
+									<PrivateRoute>
+										<Coupon />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/notifications/'
+								element={
+									<PrivateRoute>
+										<TeacherNotification />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/question-answer/'
+								element={
+									<PrivateRoute>
+										<QA />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/change-password/'
+								element={
+									<PrivateRoute>
+										<ChangePassword />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/profile/'
+								element={
+									<PrivateRoute>
+										<Profile />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/create-course/'
+								element={
+									<PrivateRoute>
+										<CourseCreate />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/edit-course/:course_id/'
+								element={
+									<PrivateRoute>
+										<CourseEdit />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path='/instructor/edit-course/:course_id/curriculum/'
+								element={
+									<PrivateRoute>
+										<CourseEditCurriculum />
+									</PrivateRoute>
+								}
+							/>
 						</Routes>
 					</MainWrapper>
 				</BrowserRouter>
