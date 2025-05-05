@@ -143,6 +143,7 @@ const App: React.FC = () => {
 							/>
 
 							{/* Teacher Routes */}
+							
 
 						
 						</Routes>
