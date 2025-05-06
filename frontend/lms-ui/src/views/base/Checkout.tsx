@@ -1,4 +1,6 @@
-import { Link, useNavigate,useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+
 import { useState, useEffect, useContext } from "react";
 import apiInstance from "../../utils/axios";
 import CartID from "../plugin/CartID";
@@ -8,12 +10,14 @@ import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
 import useAxios from "../../utils/useAxios";
 import Swal from "sweetalert2";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 function Checkout() {
      const [order, setOrder] = useState<any>([]);
-    const [coupon, setCoupon] = useState("");
+	const [coupon, setCoupon] = useState("");
+	const [paymentLoading, setPaymentLoading] = useState(false);
     
     const param = useParams();
 
@@ -60,6 +64,7 @@ function Checkout() {
 			useEffect(() => {
 				fetchOrder();
 			}, []);
+	
 	return (
 		<>
 			<BaseHeader />
