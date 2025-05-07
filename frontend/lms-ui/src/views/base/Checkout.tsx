@@ -1,70 +1,70 @@
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-
-
-import { useState, useEffect, useContext } from "react";
-import apiInstance from "../../utils/axios";
-import CartID from "../plugin/CartID";
-import { userId } from "../../utils/constants";
-import { CartListItem, CartStats } from "../../apiStructure/modelTypes";
-import Toast from "../plugin/Toast";
-import { CartContext } from "../plugin/Context";
-import useAxios from "../../utils/useAxios";
-import Swal from "sweetalert2";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
+import apiInstance from "../../utils/axios";
+import Toast from "../plugin/Toast";
+import { PAYPAL_CLIENT_ID } from "../../utils/constants";
 function Checkout() {
-     const [order, setOrder] = useState<any>([]);
+	const [order, setOrder] = useState<any>([]);
 	const [coupon, setCoupon] = useState("");
 	const [paymentLoading, setPaymentLoading] = useState(false);
-    
-    const param = useParams();
 
-    const fetchOrder = async () => {
-			try {
-				apiInstance.get(`order/checkout/${param.order_oid}/`).then((res) => {
-                    setOrder(res.data);
-                    console.log('fetch order:',res.data);
-                    
-				});
-			} catch (error) {
-				console.log(error);
-			}
-    };
-    
-    const navigate = useNavigate();
-    
-     const applyCoupon = async () => {
-				const formdata = new FormData();
-				formdata.append("order_oid", order?.oid);
-				formdata.append("coupon_code", coupon);
+	const param = useParams();
 
-				try {
-					await apiInstance.post(`order/coupon/`, formdata).then((res) => {
-						console.log(res.data);
-						fetchOrder();
-						Toast().fire({
-							icon: res.data.icon,
-							title: res.data.message,
-						});
-					});
-				} catch (error:any) {
-					if (
-						error.response.data.includes("Coupon matching query does not exi")
-					) {
-						Toast().fire({
-							icon: "error",
-							title: "Coupon does not exist",
-						});
-					}
-				}
-			};
+	const fetchOrder = async () => {
+		try {
+			apiInstance.get(`order/checkout/${param.order_oid}/`).then((res) => {
+				setOrder(res.data);
+				console.log("fetch order:", res.data);
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
-			useEffect(() => {
+	const navigate = useNavigate();
+
+	const applyCoupon = async () => {
+		const formdata = new FormData();
+		formdata.append("order_oid", order?.oid);
+		formdata.append("coupon_code", coupon);
+
+		try {
+			await apiInstance.post(`order/coupon/`, formdata).then((res) => {
+				console.log(res.data);
 				fetchOrder();
-			}, []);
-	
+				Toast().fire({
+					icon: res.data.icon,
+					title: res.data.message,
+				});
+			});
+		} catch (error: any) {
+			if (error.response.data.includes("Coupon matching query does not exi")) {
+				Toast().fire({
+					icon: "error",
+					title: "Coupon does not exist",
+				});
+			}
+		}
+	};
+
+	useEffect(() => {
+		fetchOrder();
+	}, []);
+
+	const initialOptions = {
+		clientId: PAYPAL_CLIENT_ID,
+		currency: "USD",
+		intent: "capture",
+	};
+
+	const payWithStripe = (event: React.MouseEvent<HTMLButtonElement>) => {
+		setPaymentLoading(true);
+		(event.target as HTMLButtonElement).form?.submit();
+	};
 	return (
 		<>
 			<BaseHeader />
