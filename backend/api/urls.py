@@ -30,7 +30,8 @@ urlpatterns = [
     path('order/create-order/', api_views.CreateOrderAPIView.as_view(), name='create_order'),
     path('order/checkout/<oid>/', api_views.CheckoutAPIView.as_view(), name='checkout'),
     path('order/coupon/', api_views.CouponApplyAPIView.as_view(), name='coupon'),
-    path('payment/stripe-checkout/<oid>/', api_views.StripeCheckoutAPIView.as_view(), name='stripe_checkout'),
+    path("payment/stripe-checkout/<order_oid>/",
+         api_views.StripeCheckoutAPIView.as_view(), name='stripe_checkout'),
     path('payment/payment-success/', api_views.PaymentSuccessAPIView.as_view(), name='payment_success'),
     path('course/search/', api_views.SearchCourseAPIView.as_view(), name='course_search'),
 

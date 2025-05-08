@@ -12,6 +12,9 @@ function Checkout() {
 	const [coupon, setCoupon] = useState("");
 	const [paymentLoading, setPaymentLoading] = useState(false);
 
+	console.log('order', order);
+	
+
 	const param = useParams();
 
 	const fetchOrder = async () => {
@@ -280,7 +283,7 @@ function Checkout() {
 													<span className='fw-bold'>${order.total}</span>
 												</li>
 											</ul>
-											{/* <div className='d-grid'>
+											<div className='d-grid'>
 												<form
 													action={`http://127.0.0.1:8000/api/v1/payment/stripe-checkout/${order.oid}/`}
 													className='w-100'
@@ -310,6 +313,7 @@ function Checkout() {
 														className='mt-3'
 														createOrder={(data, actions) => {
 															return actions.order.create({
+																intent: "CAPTURE",
 																purchase_units: [
 																	{
 																		amount: {
@@ -321,22 +325,32 @@ function Checkout() {
 															});
 														}}
 														onApprove={(data, actions) => {
-															return actions.order.capture().then((details) => {
-																const name = details.payer.name.given_name;
-																const status = details.status;
-																const paypal_order_id = data.orderID;
+															if (actions.order) {
+																return actions.order
+																	.capture()
+																	.then((details) => {
+																		const name =
+																			details.payer?.name?.given_name;
+																		const status = details.status;
+																		const paypal_order_id = data.orderID;
 
-																console.log(status);
-																if (status === "COMPLETED") {
-																	navigate(
-																		`/payment-success/${order.oid}/?paypal_order_id=${paypal_order_id}`
-																	);
-																}
-															});
+																		console.log(status);
+																		if (status === "COMPLETED") {
+																			navigate(
+																				`/payment-success/${order.oid}/?paypal_order_id=${paypal_order_id}`
+																			);
+																		}
+																	});
+															} else {
+																console.error("actions.order is undefined");
+																return Promise.reject(
+																	"actions.order is undefined"
+																);
+															}
 														}}
 													/>
 												</PayPalScriptProvider>
-											</div> */}
+											</div>
 											<p className='small mb-0 mt-2 text-center'>
 												By proceeding to payment, you agree to these{" "}
 												<a href='#'>

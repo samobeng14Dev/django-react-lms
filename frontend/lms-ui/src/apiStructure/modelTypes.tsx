@@ -71,11 +71,14 @@ export interface Cart {
 	date: string;
 }
 
-export interface CartStats {
-	total_price: number;
-	total_tax: number;
-	total_total: number;
-}
+// export interface CartStats {
+// 	total_price: number;
+// 	total_tax: number;
+// 	total_total: number;
+// 	price: number;
+// 	total: number;
+//     tax: number; 
+// }
 
 export interface CartListItem {
 	id: number;

@@ -101,16 +101,16 @@ class PasswordChangeAPIView(generics.UpdateAPIView):
             return Response({'message': 'Password changed successfully'}, status=status.HTTP_201_CREATED)
         else:
             return Response({'message': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        
+
 
 class ChangePasswordAPIView(generics.CreateAPIView):
-    serializer_class=api_serializers.UserSerializer
-    permission_class=[AllowAny]
+    serializer_class = api_serializers.UserSerializer
+    permission_class = [AllowAny]
 
-    def create(self,request, *args, **kwargs):
-        user_id= request.data["user_id"]
-        old_password=request.data["old_password"]
-        new_password=request.data["new_password"]
+    def create(self, request, *args, **kwargs):
+        user_id = request.data["user_id"]
+        old_password = request.data["old_password"]
+        new_password = request.data["new_password"]
 
         user = User.objects.get(id=user_id)
         if user is not None:
@@ -135,6 +135,7 @@ class ProfileAPIView(generics.RetrieveUpdateAPIView):
             return Profile.objects.get(user=user)
         except:
             return None
+
 
 class CategoryListAPIView(generics.ListAPIView):
     queryset = api_models.Category.objects.filter(active=True)
@@ -332,7 +333,7 @@ class CreateOrderAPIView(generics.CreateAPIView):
             order.save()
 
         # Return success response
-        return Response({'message': 'Order created successfully','order_oid':order.oid}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'Order created successfully', 'order_oid': order.oid}, status=status.HTTP_201_CREATED)
 
 
 class CheckoutAPIView(generics.RetrieveAPIView):
@@ -409,7 +410,7 @@ class StripeCheckoutAPIView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
 
-        order_id = self.kwargs['order_id']
+        order_id = self.kwargs['order_oid']
         order = api_models.CartOrder.objects.get(oid=order_id)
 
         if not order:
@@ -539,29 +540,33 @@ class SearchCourseAPIView(generics.ListAPIView):
         query = self.request.GET.get('query')
         return api_models.Course.objects.filter(title__icontains=query, platform_status='Published', teacher_course_status='Published')
 
+
 class StudentSummaryAPIView(generics.ListAPIView):
-    serializer_class=api_serializers.StudentSummarySerializer
-    permission_classes=[AllowAny]
+    serializer_class = api_serializers.StudentSummarySerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
-        user=User.objects.get(id=user_id)
+        user = User.objects.get(id=user_id)
 
-        total_courses =api_models.EnrolledCourse.objects.filter(user=user).count()
-        completed_lessons=api_models.CompletedLesson.objects.filter(user=user).count()
-        achieved_certificates=api_models.Certificate.objects.filter(user=user).count()
+        total_courses = api_models.EnrolledCourse.objects.filter(
+            user=user).count()
+        completed_lessons = api_models.CompletedLesson.objects.filter(
+            user=user).count()
+        achieved_certificates = api_models.Certificate.objects.filter(
+            user=user).count()
 
         return [{
-                'total_courses': total_courses, 
-                'completed_lessons': completed_lessons, 
+                'total_courses': total_courses,
+                'completed_lessons': completed_lessons,
                 'achieved_certificates': achieved_certificates
-            }]
-    
-    def list(self,request, *args, **kwargs):
-        queryset=self.get_queryset()
-        serializer=self.get_serializer(queryset, many=True)
+                }]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
 
 class StudentCourseListAPIView(generics.ListAPIView):
     serializer_class = api_serializers.EnrolledCourseSerializer
@@ -722,7 +727,7 @@ class StudentWishListListCreateAPIView(generics.ListCreateAPIView):
                 user=user, course=course
             )
             return Response({"message": "Wishlist Created"}, status=status.HTTP_201_CREATED)
-        
+
 
 class QuestionAnswerListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = api_serializers.Question_AnswerSerializer
@@ -829,10 +834,6 @@ class QuestionAnswerMessageSendAPIView(generics.CreateAPIView):
 #         queryset = self.get_queryset()
 #         serializer = self.get_serializer(queryset, many=True)
 #         return Response(serializer.data)
-
-
-
-
 
 
 # class CouponApplyAPIView(generics.CreateAPIView):

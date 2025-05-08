@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import apiInstance from "../../utils/axios";
 import CartID from "../plugin/CartID";
 import { userId } from "../../utils/constants";
-import { CartListItem, CartStats } from "../../apiStructure/modelTypes";
+import { CartListItem } from "../../apiStructure/modelTypes";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import Toast from "../plugin/Toast";
@@ -14,15 +14,16 @@ import Swal from "sweetalert2";
 
 function Cart() {
 	const [cart, setCart] = useState<CartListItem[]>([]);
-	const [cartStats, setCartStats] = useState<CartStats | null>(null);
+	const [cartStats, setCartStats] = useState<any>(null);
 	const [cartCount, setCartCount] = useContext<any>(CartContext);
 	const [bioData, setBioData] = useState({
 		full_name: "",
 		email: "",
 		country: "",
 	});
-
 	// const [loading, setLoading] = useState(true)
+
+	// console.log("cartStats", cartStats);
 
 	const fetchCartItem = async () => {
 		try {
@@ -30,7 +31,7 @@ function Cart() {
 				setCart(res.data);
 			});
 
-			await apiInstance.get(`cart/stats/${CartID()}/`).then((res) => {
+			await apiInstance.get(`cart/cart-stats/${CartID()}/`).then((res) => {
 				setCartStats(res.data);
 			});
 		} catch (error) {
@@ -64,43 +65,43 @@ function Cart() {
 			});
 	};
 
-	   const handleBioDataChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-				setBioData({
-					...bioData,
-					[event.target.name]: event.target.value,
-				});
+	const handleBioDataChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setBioData({
+			...bioData,
+			[event.target.name]: event.target.value,
+		});
 	};
-	    
-	   const createOrder = async (e: React.FormEvent<HTMLFormElement>) => {
-				e.preventDefault();
-				if (!bioData.full_name || !bioData.email || !bioData.country) {
-					Toast().fire({
-						icon: "warning",
-						title: "Please provide your bio data",
-					});
-					return;
-				}
-				const formdata = new FormData();
-				formdata.append("full_name", bioData.full_name);
-				formdata.append("email", bioData.email);
-				formdata.append("country", bioData.country);
-				formdata.append("cart_id", CartID());
-				formdata.append("user_id", userId);
 
-				try {
-					await useAxios()
-						.post(`/order/create-order/`, formdata)
-						.then((res) => {
-							navigate(`/checkout/${res.data.order_oid}/`);
-						});
-				} catch (error) {
-					console.log(error);
-					Swal.fire({
-						icon: "error",
-						title: (error as any)?.response?.data?.detail || "An error occurred",
-					});
-				};
-			}
+	const createOrder = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (!bioData.full_name || !bioData.email || !bioData.country) {
+			Toast().fire({
+				icon: "warning",
+				title: "Please provide your bio data",
+			});
+			return;
+		}
+		const formdata = new FormData();
+		formdata.append("full_name", bioData.full_name);
+		formdata.append("email", bioData.email);
+		formdata.append("country", bioData.country);
+		formdata.append("cart_id", CartID());
+		formdata.append("user_id", userId);
+
+		try {
+			await useAxios()
+				.post(`/order/create-order/`, formdata)
+				.then((res) => {
+					navigate(`/checkout/${res.data.order_oid}/`);
+				});
+		} catch (error) {
+			console.log(error);
+			Swal.fire({
+				icon: "error",
+				title: (error as any)?.response?.data?.detail || "An error occurred",
+			});
+		}
+	};
 	return (
 		<>
 			<BaseHeader />
@@ -272,29 +273,32 @@ function Cart() {
 									<ul className='list-group mb-3'>
 										<li className='list-group-item d-flex justify-content-between align-items-center'>
 											Sub Total
-											<span>$10.99</span>
+											<span>${cartStats?.total_price?.toFixed(2)}</span>
 										</li>
 										<li className='list-group-item d-flex justify-content-between align-items-center'>
 											Tax
-											<span>$0.99</span>
+											<span>${cartStats?.total_tax?.toFixed(2)}</span>
 										</li>
 										<li className='list-group-item d-flex fw-bold justify-content-between align-items-center'>
 											Total
-											<span className='fw-bold'>$8.99</span>
+											<span className='fw-bold'>
+												${cartStats?.total_total?.toFixed(2)}
+											</span>
 										</li>
 									</ul>
 									<div className='d-grid'>
 										<button
-											type="submit"
+											type='submit'
 											className='btn btn-lg btn-success'>
 											Proceed to Checkout
 										</button>
 									</div>
 									<p className='small mb-0 mt-2 text-center'>
 										By proceeding to checkout, you agree to these{" "}
-										<Link to='/terms'>
+										<a href='#'>
+											{" "}
 											<strong>Terms of Service</strong>
-										</Link>
+										</a>
 									</p>
 								</div>
 							</div>
