@@ -15,8 +15,8 @@ import { CartContext } from "../plugin/Context";
 
 function Index() {
 	const [courses, setCourses] = useState<Course[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [cartCount, setCartCount] = useState(CartContext);
+	const [isLoading, setIsLoading] = useState(true);
+	const [cartCount, setCartCount] = useState(CartContext);
 
 	const country = useCurrentAddress()?.country;
 	const userId = UserData()?.user_id;
@@ -28,7 +28,7 @@ function Index() {
 		setIsLoading(true);
 		try {
 			const response = await axiosInstance.get("/core/course-list/");
-			console.log('fetching courses',response.data);
+			console.log("fetching courses", response.data);
 			setCourses(response.data);
 			setIsLoading(false);
 		} catch (error) {
@@ -84,21 +84,33 @@ function Index() {
 		}
 	};
 
-	 const addToWishlist = (courseId:any) => {
-			const formdata = new FormData();
-			formdata.append("user_id", UserData()?.user_id);
-			formdata.append("course_id", courseId);
+	// Pagination
+	const itemsPerPage = 1;
+	const [currentPage, setCurrentPage] = useState(1);
+	const indexOfLastItem = currentPage * itemsPerPage;
+	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+	const currentItems = courses.slice(indexOfFirstItem, indexOfLastItem);
+	const totalPages = Math.ceil(courses.length / itemsPerPage);
+	const pageNumbers = Array.from(
+		{ length: totalPages },
+		(_, index) => index + 1
+	);
 
-			apiInstance
-				.post(`student/wishlist/${UserData()?.user_id}/`, formdata)
-				.then((res) => {
-					console.log(res.data);
-					Toast().fire({
-						icon: "success",
-						title: res.data.message,
-					});
+	const addToWishlist = (courseId: any) => {
+		const formdata = new FormData();
+		formdata.append("user_id", UserData()?.user_id);
+		formdata.append("course_id", courseId);
+
+		apiInstance
+			.post(`student/wishlist/${UserData()?.user_id}/`, formdata)
+			.then((res) => {
+				console.log(res.data);
+				Toast().fire({
+					icon: "success",
+					title: res.data.message,
 				});
-		};
+			});
+	};
 
 	return (
 		<>
@@ -231,10 +243,8 @@ function Index() {
 					<div className='row'>
 						<div className='col-md-12'>
 							<div className='row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4'>
-								{courses?.map((c, index) => (
-									<div
-										className='col'
-										key={index}>
+								{currentItems?.map((c, index) => (
+									<div className='col'>
 										{/* Card */}
 										<div className='card card-hover'>
 											<Link to={`/course-detail/${c.slug}/`}>
@@ -274,7 +284,7 @@ function Index() {
 												<small>By: {c.teacher.full_name}</small> <br />
 												<small>
 													{c.students?.length} Student
-													{c.students.length > 1 && "s"}
+													{c.students?.length > 1 && "s"}
 												</small>{" "}
 												<br />
 												<div className='lh-1 mt-3 d-flex'>
@@ -282,13 +292,11 @@ function Index() {
 														<span className='fs-6'>
 															<Rater
 																total={5}
-																rating={c.average_rating ?? 0}
+																rating={c.average_rating || 0}
 															/>
 														</span>
 													</span>
-													<span className='text-warning'>
-														{c.average_rating}
-													</span>
+													<span className='text-warning'>4.5</span>
 													<span className='fs-6 ms-2'>
 														({c.reviews?.length} Reviews)
 													</span>
@@ -327,33 +335,45 @@ function Index() {
 										</div>
 									</div>
 								))}
-
-								<nav className='d-flex mt-5'>
-									<ul className='pagination'>
-										<li className=''>
-											<button className='page-link me-1'>
-												<i className='ci-arrow-left me-2' />
-												Previous
-											</button>
-										</li>
-									</ul>
-									<ul className='pagination'>
-										<li
-											key={1}
-											className='active'>
-											<button className='page-link'>1</button>
-										</li>
-									</ul>
-									<ul className='pagination'>
-										<li className={`totalPages`}>
-											<button className='page-link ms-1'>
-												Next
-												<i className='ci-arrow-right ms-3' />
-											</button>
-										</li>
-									</ul>
-								</nav>
 							</div>
+							<nav className='d-flex mt-5'>
+								<ul className='pagination'>
+									<li
+										className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+										<button
+											className='page-link me-1'
+											onClick={() => setCurrentPage(currentPage - 1)}>
+											<i className='ci-arrow-left me-2' />
+											Previous
+										</button>
+									</li>
+								</ul>
+								<ul className='pagination'>
+									{pageNumbers.map((number) => (
+										<li
+											key={number}
+											className={`page-item ${currentPage === number ? "active" : ""}`}>
+											<button
+												className='page-link'
+												onClick={() => setCurrentPage(number)}>
+												{number}
+											</button>
+										</li>
+									))}
+								</ul>
+
+								<ul className='pagination'>
+									<li
+										className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+										<button
+											className='page-link ms-1'
+											onClick={() => setCurrentPage(currentPage + 1)}>
+											Next
+											<i className='ci-arrow-right ms-3' />
+										</button>
+									</li>
+								</ul>
+							</nav>
 						</div>
 					</div>
 				</div>
