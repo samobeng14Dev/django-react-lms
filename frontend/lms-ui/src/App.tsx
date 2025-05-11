@@ -36,6 +36,8 @@ import Profile from "./views/instructor/Profile";
 import CourseCreate from "./views/instructor/CourseCreate";
 import CourseEdit from "./views/instructor/CourseEdit";
 import CourseEditCurriculum from "./views/instructor/CourseEditCurriculum"
+import Success from "./views/base/Success";
+import Search from "./views/base/Search";
 
 const App: React.FC = () => {
 	const [cartCount, setCartCount] = useState(0);
@@ -97,14 +99,14 @@ const App: React.FC = () => {
 								path='/checkout/:order_oid/'
 								element={<Checkout />}
 							/>
-							{/* <Route
+							<Route
 								path='/payment-success/:order_oid/'
 								element={<Success />}
 							/>
 							<Route
 								path='/search/'
 								element={<Search />}
-							/> */}
+							/>
 
 							{/* Student Routes */}
 							<Route
