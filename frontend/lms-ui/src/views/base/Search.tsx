@@ -77,7 +77,7 @@ function Search() {
 	const [searchQuery, setSearchQuery] = useState("");
 	console.log(searchQuery);
 
-	const handleSeach = (e: { target: { value: string; }; }) => {
+	const handleSearch = (e: { target: { value: string; }; }) => {
 		const query = e.target.value.toLowerCase();
 		setSearchQuery(query);
 
@@ -104,7 +104,7 @@ function Search() {
 						<div className='col-12'>
 							<div className='mb-6'>
 								<h2 className='mb-1 h1'>
-									Showing Results for "{searchQuery || "No Search Query"}"
+									Showing Results for "{searchQuery || "No Search Result"}"
 								</h2>
 							</div>
 						</div>
@@ -116,7 +116,7 @@ function Search() {
 									placeholder='Search Courses...'
 									name=''
 									id=''
-									onChange={handleSeach}
+									onChange={handleSearch}
 								/>
 							</div>
 						</div>
@@ -124,7 +124,7 @@ function Search() {
 					<div className='row'>
 						<div className='col-md-12'>
 							<div className='row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4'>
-								{courses?.map((c:any, index:number) => (
+								{courses?.map((c: any, index: number) => (
 									<div className='col'>
 										{/* Card */}
 										<div className='card card-hover'>
