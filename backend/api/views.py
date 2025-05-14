@@ -18,6 +18,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, viewsets
+from rest_framework.decorators import api_view
 
 import random
 from decimal import Decimal
@@ -28,6 +29,8 @@ from datetime import datetime, timedelta
 stripe.api_key = settings.STRIPE_SECRET_KEY
 PAYPAL_CLIENT_ID = settings.PAYPAL_CLIENT_ID
 PAYPAL_SECRET_ID = settings.PAYPAL_SECRET_ID
+
+from django.db.models.functions import ExtractMonth
 
 
 class MytokenObtainPairView(TokenObtainPairView):
@@ -869,7 +872,7 @@ class TeacherReviewDetailAPIView(generics.RetrieveUpdateAPIView):
         return api_models.Review.objects.get(course__teacher=teacher, id=review_id)
 
 
-class TeacherStudentsListAPIVIew(viewsets.ViewSet):
+class TeacherStudentsListAPIView(viewsets.ViewSet):
 
     def list(self, request, teacher_id=None):
         teacher = api_models.Teacher.objects.get(id=teacher_id)
@@ -893,6 +896,25 @@ class TeacherStudentsListAPIVIew(viewsets.ViewSet):
                 unique_student_ids.add(course.user_id)
 
         return Response(students)
+
+
+@api_view(("GET", ))
+def TeacherAllMonthEarningAPIView(request, teacher_id):
+    teacher = api_models.Teacher.objects.get(id=teacher_id)
+    monthly_earning_tracker = (
+        api_models.CartOrderItem.objects
+        .filter(teacher=teacher, order__payment_status="Paid")
+        .annotate(
+            month=ExtractMonth("date")
+        )
+        .values("month")
+        .annotate(
+            total_earning=models.Sum("price")
+        )
+        .order_by("month")
+    )
+
+    return Response(monthly_earning_tracker)
 
 
 
