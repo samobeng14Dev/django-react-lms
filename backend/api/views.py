@@ -939,6 +939,17 @@ class TeacherBestSellingCourseAPIView(viewsets.ViewSet):
         return Response(courses_with_total_price)
 
 
+class TeacherCourseOrdersListAPIView(generics.ListAPIView):
+    serializer_class = api_serializers.CartOrderItemSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        teacher_id = self.kwargs['teacher_id']
+        teacher = api_models.Teacher.objects.get(id=teacher_id)
+
+        return api_models.CartOrderItem.objects.filter(teacher=teacher)
+
+
 
 
 # class CouponApplyAPIView(generics.CreateAPIView):
