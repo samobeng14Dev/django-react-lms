@@ -17,7 +17,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework import generics
+from rest_framework import generics, viewsets
 
 import random
 from decimal import Decimal
@@ -867,6 +867,32 @@ class TeacherReviewDetailAPIView(generics.RetrieveUpdateAPIView):
         review_id = self.kwargs['review_id']
         teacher = api_models.Teacher.objects.get(id=teacher_id)
         return api_models.Review.objects.get(course__teacher=teacher, id=review_id)
+
+
+class TeacherStudentsListAPIVIew(viewsets.ViewSet):
+
+    def list(self, request, teacher_id=None):
+        teacher = api_models.Teacher.objects.get(id=teacher_id)
+
+        enrolled_courses = api_models.EnrolledCourse.objects.filter(
+            teacher=teacher)
+        unique_student_ids = set()
+        students = []
+
+        for course in enrolled_courses:
+            if course.user_id not in unique_student_ids:
+                user = User.objects.get(id=course.user_id)
+                student = {
+                    "full_name": user.profile.full_name,
+                    "image": user.profile.image.url,
+                    "country": user.profile.country,
+                    "date": course.date
+                }
+
+                students.append(student)
+                unique_student_ids.add(course.user_id)
+
+        return Response(students)
 
 
 
