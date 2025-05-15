@@ -960,6 +960,16 @@ class TeacherQuestionAnswerListAPIView(generics.ListAPIView):
         return api_models.Question_Answer.objects.filter(course__teacher=teacher)
 
 
+class TeacherCouponListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = api_serializers.CouponSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        teacher_id = self.kwargs['teacher_id']
+        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        return api_models.Coupon.objects.filter(teacher=teacher)
+
+
 
 # class CouponApplyAPIView(generics.CreateAPIView):
 #     serializer_class = api_serializers.CouponSerializer
