@@ -950,6 +950,15 @@ class TeacherCourseOrdersListAPIView(generics.ListAPIView):
         return api_models.CartOrderItem.objects.filter(teacher=teacher)
 
 
+class TeacherQuestionAnswerListAPIView(generics.ListAPIView):
+    serializer_class = api_serializers.Question_AnswerSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        teacher_id = self.kwargs['teacher_id']
+        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        return api_models.Question_Answer.objects.filter(course__teacher=teacher)
+
 
 
 # class CouponApplyAPIView(generics.CreateAPIView):
