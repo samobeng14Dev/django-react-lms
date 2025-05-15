@@ -970,6 +970,17 @@ class TeacherCouponListCreateAPIView(generics.ListCreateAPIView):
         return api_models.Coupon.objects.filter(teacher=teacher)
 
 
+class TeacherCouponDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = api_serializers.CouponSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        teacher_id = self.kwargs['teacher_id']
+        coupon_id = self.kwargs['coupon_id']
+        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        return api_models.Coupon.objects.get(teacher=teacher, id=coupon_id)
+
+
 
 # class CouponApplyAPIView(generics.CreateAPIView):
 #     serializer_class = api_serializers.CouponSerializer
