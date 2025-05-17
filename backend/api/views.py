@@ -1002,6 +1002,39 @@ class TeacherNotificationDetailAPIView(generics.RetrieveUpdateAPIView):
         return api_models.Notification.objects.get(teacher=teacher, id=noti_id)
 
 
+class CourseCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        title = request.data.get("title")
+        description = request.data.get("description")
+        image = request.data.get("image")
+        file = request.data.get("file")
+        level = request.data.get("level")
+        language = request.data.get("language")
+        price = request.data.get("price")
+        category = request.data.get("category")
+
+        category_obj = api_models.Category.objects.filter(id=category).first()
+        teacher = api_models.Teacher.objects.get(user=request.user)
+
+        course = api_models.Course.objects.create(
+            teacher=teacher,
+            category=category_obj,
+            file=file,
+            image=image,
+            title=title,
+            description=description,
+            price=price,
+            language=language,
+            level=level
+        )
+
+        return Response({"message": "Course Created", "course_id": course.course_id}, status=status.HTTP_201_CREATED)
+
+
+
+
 
 # class CouponApplyAPIView(generics.CreateAPIView):
 #     serializer_class = api_serializers.CouponSerializer
