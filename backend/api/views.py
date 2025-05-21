@@ -11,7 +11,7 @@ from api import models as api_models
 from api import serializer as api_serializers
 
 
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
@@ -19,6 +19,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, viewsets
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 
 import random
 from decimal import Decimal
@@ -1036,7 +1037,7 @@ class CourseCreateAPIView(APIView):
 
 class CourseUpdateAPIView(generics.RetrieveUpdateAPIView):
     querysect = api_models.Course.objects.all()
-    serializer_class = api_serializer.CourseSerializer
+    serializer_class = api_serializers.CourseSerializer
     permisscion_classes = [AllowAny]
 
     def get_object(self):
