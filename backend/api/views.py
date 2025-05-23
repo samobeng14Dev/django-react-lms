@@ -1171,6 +1171,15 @@ class CourseUpdateAPIView(generics.RetrieveUpdateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save(course=course_instance) 
 
+
+class CourseDetailAPIView(generics.RetrieveDestroyAPIView):
+    serializer_class = api_serializers.CourseSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        slug = self.kwargs['slug']
+        return api_models.Course.objects.get(slug=slug)
+
 # class CouponApplyAPIView(generics.CreateAPIView):
 #     serializer_class = api_serializers.CouponSerializer
 #     permission_classes = [AllowAny]
