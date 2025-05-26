@@ -1180,6 +1180,23 @@ class CourseDetailAPIView(generics.RetrieveDestroyAPIView):
         slug = self.kwargs['slug']
         return api_models.Course.objects.get(slug=slug)
 
+
+class CourseVariantDeleteAPIView(generics.DestroyAPIView):
+    serializer_class = api_serializers.VariantSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        variant_id = self.kwargs['variant_id']
+        teacher_id = self.kwargs['teacher_id']
+        course_id = self.kwargs['course_id']
+
+        print("variant_id ========", variant_id)
+
+        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        course = api_models.Course.objects.get(
+            teacher=teacher, course_id=course_id)
+        return api_models.Variant.objects.get(id=variant_id)
+
 # class CouponApplyAPIView(generics.CreateAPIView):
 #     serializer_class = api_serializers.CouponSerializer
 #     permission_classes = [AllowAny]
