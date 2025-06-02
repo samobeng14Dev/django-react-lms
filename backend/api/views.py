@@ -26,6 +26,7 @@ from decimal import Decimal
 import stripe
 import requests
 from datetime import datetime, timedelta
+from distutils.util import strtobool
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 PAYPAL_CLIENT_ID = settings.PAYPAL_CLIENT_ID
@@ -1036,9 +1037,9 @@ class CourseCreateAPIView(APIView):
 
 
 class CourseUpdateAPIView(generics.RetrieveUpdateAPIView):
-    querysect = api_models.Course.objects.all()
+    queryset = api_models.Course.objects.all()
     serializer_class = api_serializers.CourseSerializer
-    permisscion_classes = [AllowAny]
+    permission_classes = [AllowAny]
 
     def get_object(self):
         teacher_id = self.kwargs['teacher_id']
