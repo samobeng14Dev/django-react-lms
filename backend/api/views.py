@@ -170,6 +170,19 @@ class CourseDetailAPIView(generics.RetrieveAPIView):
         return course
 
 
+class TeacherCourseDetailAPIView(generics.RetrieveAPIView):
+    serializer_class = api_serializers.CourseSerializer
+    permission_classes = [AllowAny]
+    queryset = api_models.Course.objects.filter(
+        platform_status="Published", teacher_course_status="Published")
+
+    def get_object(self):
+        course_id = self.kwargs['course_id']
+        course = api_models.Course.objects.get(
+            course_id=course_id, platform_status="Published", teacher_course_status="Published")
+        return course
+
+
 class CartAPIView(generics.CreateAPIView):
     queryset = api_models.Cart.objects.all()
     serializer_class = api_serializers.CartSerializer
