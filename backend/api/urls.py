@@ -91,8 +91,8 @@ urlpatterns = [
          api_views.TeacherCourseDetailAPIView.as_view()),
     path("teacher/course/variant-delete/<variant_id>/<teacher_id>/<course_id>/",
          api_views.CourseVariantDeleteAPIView.as_view()),
-#     path("teacher/course/variant-item-delete/<variant_id>/<variant_item_id>/<teacher_id>/<course_id>/",
-#          api_views.CourseVariantItemDeleteAPIVIew.as_view()),
+    path("teacher/course/variant-item-delete/<variant_id>/<variant_item_id>/<teacher_id>/<course_id>/",
+         api_views.CourseVariantItemDeleteAPIVIew.as_view()),
 
 #     path("file-upload/", api_views.FileUploadAPIView.as_view())
 

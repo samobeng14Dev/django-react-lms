@@ -1211,6 +1211,27 @@ class CourseVariantDeleteAPIView(generics.DestroyAPIView):
             teacher=teacher, course_id=course_id)
         return api_models.Variant.objects.get(id=variant_id)
 
+
+class CourseVariantItemDeleteAPIVIew(generics.DestroyAPIView):
+
+    serializer_class = api_serializers.VariantItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        variant_id = self.kwargs['variant_id']
+        variant_item_id = self.kwargs['variant_item_id']
+        teacher_id = self.kwargs['teacher_id']
+        course_id = self.kwargs['course_id']
+
+        teacher = api_models.Teacher.objects.get(id=teacher_id)
+        course = api_models.Course.objects.get(
+            teacher=teacher, course_id=course_id)
+        variant = api_models.Variant.objects.get(
+            variant_id=variant_id, course=course)
+        return api_models.VariantItem.objects.get(variant=variant, variant_item_id=variant_item_id)
+
+
+
 # class CouponApplyAPIView(generics.CreateAPIView):
 #     serializer_class = api_serializers.CouponSerializer
 #     permission_classes = [AllowAny]
