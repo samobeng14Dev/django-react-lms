@@ -1204,7 +1204,7 @@ class CourseVariantDeleteAPIView(generics.DestroyAPIView):
         teacher_id = self.kwargs['teacher_id']
         course_id = self.kwargs['course_id']
 
-        print("variant_id ========", variant_id)
+        # print("variant_id ========", variant_id)
 
         teacher = api_models.Teacher.objects.get(id=teacher_id)
         course = api_models.Course.objects.get(
