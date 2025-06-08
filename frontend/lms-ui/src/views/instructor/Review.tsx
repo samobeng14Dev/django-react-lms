@@ -10,44 +10,40 @@ import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
-import { teacherId } from "../../utils/constants";
+// import { teacherId } from "../../utils/constants";
 import Toast from "../plugin/Toast";
 
-type ReviewType = {
-	id: number;
-	date: string;
-	rating: number;
-	review: string;
-	reply?: string;
-	profile: {
-		image: string;
-		full_name: string;
-	};
-	course: {
-		title: string;
-	};
-};
-
 function Review() {
-	const [reviews, setReviews] = useState<ReviewType[]>([]);
+	const [reviews, setReviews] = useState([]);
 	const [reply, setReply] = useState("");
-	const [filteredReviews, setFilteredReview] = useState<ReviewType[]>([]);
+	const [filteredReviews, setFilteredReview] = useState<any>([]);
 
 	const fetchReviewsData = () => {
+		const teacherId = UserData()?.user_id;
+
+		if (!teacherId) {
+			console.error("Teacher ID is undefined. Aborting API call.");
+			return;
+		}
+
 		useAxios()
 			.get(`teacher/review-lists/${teacherId}/`)
 			.then((res: any) => {
-				// console.log(res.data);
+				console.log(res.data);
 				setReviews(res.data);
 				setFilteredReview(res.data);
+			})
+			.catch((err) => {
+				console.error("Error fetching reviews:", err);
 			});
 	};
-
+    
 	useEffect(() => {
 		fetchReviewsData();
 	}, []);
 
-	const handleSubmitReply = async (reviewId: number) => {
+    const handleSubmitReply = async (reviewId: any) => {
+        const teacherId = UserData()?.user_id;
 		try {
 			await useAxios()
 				.patch(`teacher/review-detail/${teacherId}/${reviewId}/`, {
@@ -55,6 +51,11 @@ function Review() {
 				})
 				.then((res) => {
 					console.log(res.data);
+					fetchReviewsData();
+					Toast().fire({
+						icon: "success",
+						title: "Reply sent.",
+					});
 					setReply("");
 				});
 		} catch (error) {
@@ -78,15 +79,17 @@ function Review() {
 		setFilteredReview(sortedReview);
 	};
 
-	const handleSortByRatingChange = (
-		e: React.ChangeEvent<HTMLSelectElement>
-	) => {
-		const rating = parseInt(e.target.value);
+	interface SortByRatingEvent extends React.ChangeEvent<HTMLSelectElement> {}
+
+	const handleSortByRatingChange = (e: SortByRatingEvent) => {
+		const rating: number = parseInt(e.target.value);
 		console.log(rating);
 		if (rating === 0) {
 			fetchReviewsData();
 		} else {
-			const filtered = reviews.filter((review) => review.rating === rating);
+			const filtered = reviews.filter(
+				(review: any) => review.rating === rating
+			);
 			setFilteredReview(filtered);
 		}
 	};
@@ -96,7 +99,7 @@ function Review() {
 		if (query === "") {
 			fetchReviewsData();
 		} else {
-			const filtered = reviews.filter((review) => {
+			const filtered = reviews.filter((review: any) => {
 				return review.course.title.toLowerCase().includes(query);
 			});
 			setFilteredReview(filtered);
@@ -165,7 +168,7 @@ function Review() {
 									{/* List group */}
 									<ul className='list-group list-group-flush'>
 										{/* List group item */}
-										{filteredReviews?.map((r, index) => (
+										{filteredReviews?.map((r: any, index: any) => (
 											<li className='list-group-item p-4 shadow rounded-3 mb-4'>
 												<div className='d-flex'>
 													<img
