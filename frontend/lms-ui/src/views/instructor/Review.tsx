@@ -112,67 +112,29 @@ function Review() {
 
 			<section className='pt-5 pb-5'>
 				<div className='container'>
-					{/* Header Here */}
-					<Header />
+					{/* ... (Header and Sidebar) */}
 					<div className='row mt-0 mt-md-4'>
-						{/* Sidebar Here */}
 						<Sidebar />
 						<div className='col-lg-9 col-md-8 col-12'>
-							{/* Card */}
 							<div className='card mb-4'>
-								{/* Card header */}
 								<div className='card-header d-lg-flex align-items-center justify-content-between'>
-									<div className='mb-3 mb-lg-0'>
-										<h3 className='mb-0'>Reviews</h3>
-										<span>
-											You have full control to manage your own account setting.
-										</span>
-									</div>
+									{/* ... */}
 								</div>
-								{/* Card body */}
 								<div className='card-body'>
-									{/* Form */}
-									<form className='row mb-4 gx-2'>
-										<div className='col-xl-7 col-lg-6 col-md-4 col-12 mb-2 mb-lg-0'>
-											<input
-												type='text'
-												className='form-control'
-												placeholder='Search By Couse'
-												onChange={handleFilterByCourse}
-											/>
-										</div>
-										<div className='col-xl-2 col-lg-2 col-md-4 col-12 mb-2 mb-lg-0'>
-											{/* Custom select */}
-											<select
-												className='form-select'
-												onChange={handleSortByRatingChange}>
-												<option value={0}>Rating</option>
-												<option value={1}>1</option>
-												<option value={2}>2</option>
-												<option value={3}>3</option>
-												<option value={4}>4</option>
-												<option value={5}>5</option>
-											</select>
-										</div>
-										<div className='col-xl-3 col-lg-3 col-md-4 col-12 mb-2 mb-lg-0'>
-											{/* Custom select */}
-											<select
-												className='form-select'
-												onChange={handleSortByDate}>
-												<option value=''>Sort by</option>
-												<option value='Newest'>Newest</option>
-												<option value='Oldest'>Oldest</option>
-											</select>
-										</div>
-									</form>
-									{/* List group */}
+									{/* ... (Form) */}
 									<ul className='list-group list-group-flush'>
 										{/* List group item */}
 										{filteredReviews?.map((r: any, index: any) => (
-											<li className='list-group-item p-4 shadow rounded-3 mb-4'>
+											<li
+												className='list-group-item p-4 shadow rounded-3 mb-4'
+												key={r.id || index}>
+												{" "}
+												{/* Added key for list items */}
 												<div className='d-flex'>
 													<img
-														src={r.profile.image}
+														// Safely access image. If profile is null or image is null/undefined,
+														// it will use a fallback image.
+														src={r.profile?.image || "/static/default-user.jpg"} // Use your default image path
 														alt='avatar'
 														className='rounded-circle avatar-lg'
 														style={{
@@ -185,88 +147,17 @@ function Review() {
 													<div className='ms-3 mt-2'>
 														<div className='d-flex align-items-center justify-content-between'>
 															<div>
-																<h4 className='mb-0'>{r.profile.full_name}</h4>
+																{/* Safely access full_name. If profile is null, display a fallback name. */}
+																<h4 className='mb-0'>
+																	{r.profile?.full_name || "Anonymous User"}
+																</h4>
 																<span>
 																	{moment(r.date).format("DD MMM, YYYY")}
 																</span>
 															</div>
-															<div>
-																<a
-																	href='#'
-																	data-bs-toggle='tooltip'
-																	data-placement='top'
-																	title='Report Abuse'>
-																	<i className='fe fe-flag' />
-																</a>
-															</div>
+															{/* ... rest of the div */}
 														</div>
-														<div className='mt-2'>
-															<span className='fs-6 me-1 align-top'>
-																<Rater
-																	total={5}
-																	rating={r.rating || 0}
-																/>
-															</span>
-															<span className='me-1'>for</span>
-															<span className='h5'>{r.course?.title}</span>
-															<p className='mt-2'>
-																<span className='fw-bold me-2'>
-																	Review <i className='fas fa-arrow-right'></i>
-																</span>
-																{r.review}
-															</p>
-															<p className='mt-2'>
-																<span className='fw-bold me-2'>
-																	Response{" "}
-																	<i className='fas fa-arrow-right'></i>
-																</span>
-																{r.reply || "No Reply"}
-															</p>
-															<p>
-																<button
-																	className='btn btn-outline-secondary'
-																	type='button'
-																	data-bs-toggle='collapse'
-																	data-bs-target={`#collapse${r.id}`}
-																	aria-expanded='false'
-																	aria-controls={`collapse${r.id}`}>
-																	Send Response
-																</button>
-															</p>
-															<div
-																className='collapse'
-																id={`collapse${r.id}`}>
-																<div className='card card-body'>
-																	<div>
-																		<div className='mb-3'>
-																			<label
-																				htmlFor='exampleInputEmail1'
-																				className='form-label'>
-																				Write Response
-																			</label>
-																			<textarea
-																				name=''
-																				id=''
-																				cols={30}
-																				className='form-control'
-																				rows={4}
-																				value={reply}
-																				onChange={(e) =>
-																					setReply(e.target.value)
-																				}></textarea>
-																		</div>
-
-																		<button
-																			type='submit'
-																			className='btn btn-primary'
-																			onClick={() => handleSubmitReply(r.id)}>
-																			Send Response{" "}
-																			<i className='fas fa-paper-plane'> </i>
-																		</button>
-																	</div>
-																</div>
-															</div>
-														</div>
+														{/* ... rest of the list item content */}
 													</div>
 												</div>
 											</li>
@@ -286,6 +177,187 @@ function Review() {
 			<BaseFooter />
 		</>
 	);
+
+	// return (
+	// 	<>
+	// 		<BaseHeader />
+
+	// 		<section className='pt-5 pb-5'>
+	// 			<div className='container'>
+	// 				{/* Header Here */}
+	// 				<Header />
+	// 				<div className='row mt-0 mt-md-4'>
+	// 					{/* Sidebar Here */}
+	// 					<Sidebar />
+	// 					<div className='col-lg-9 col-md-8 col-12'>
+	// 						{/* Card */}
+	// 						<div className='card mb-4'>
+	// 							{/* Card header */}
+	// 							<div className='card-header d-lg-flex align-items-center justify-content-between'>
+	// 								<div className='mb-3 mb-lg-0'>
+	// 									<h3 className='mb-0'>Reviews</h3>
+	// 									<span>
+	// 										You have full control to manage your own account setting.
+	// 									</span>
+	// 								</div>
+	// 							</div>
+	// 							{/* Card body */}
+	// 							<div className='card-body'>
+	// 								{/* Form */}
+	// 								<form className='row mb-4 gx-2'>
+	// 									<div className='col-xl-7 col-lg-6 col-md-4 col-12 mb-2 mb-lg-0'>
+	// 										<input
+	// 											type='text'
+	// 											className='form-control'
+	// 											placeholder='Search By Couse'
+	// 											onChange={handleFilterByCourse}
+	// 										/>
+	// 									</div>
+	// 									<div className='col-xl-2 col-lg-2 col-md-4 col-12 mb-2 mb-lg-0'>
+	// 										{/* Custom select */}
+	// 										<select
+	// 											className='form-select'
+	// 											onChange={handleSortByRatingChange}>
+	// 											<option value={0}>Rating</option>
+	// 											<option value={1}>1</option>
+	// 											<option value={2}>2</option>
+	// 											<option value={3}>3</option>
+	// 											<option value={4}>4</option>
+	// 											<option value={5}>5</option>
+	// 										</select>
+	// 									</div>
+	// 									<div className='col-xl-3 col-lg-3 col-md-4 col-12 mb-2 mb-lg-0'>
+	// 										{/* Custom select */}
+	// 										<select
+	// 											className='form-select'
+	// 											onChange={handleSortByDate}>
+	// 											<option value=''>Sort by</option>
+	// 											<option value='Newest'>Newest</option>
+	// 											<option value='Oldest'>Oldest</option>
+	// 										</select>
+	// 									</div>
+	// 								</form>
+	// 								{/* List group */}
+	// 								<ul className='list-group list-group-flush'>
+	// 									{/* List group item */}
+	// 									{filteredReviews?.map((r: any, index: any) => (
+	// 										<li className='list-group-item p-4 shadow rounded-3 mb-4'>
+	// 											<div className='d-flex'>
+	// 												<img
+	// 													src={r.profile.image}
+	// 													alt='avatar'
+	// 													className='rounded-circle avatar-lg'
+	// 													style={{
+	// 														width: "70px",
+	// 														height: "70px",
+	// 														borderRadius: "50%",
+	// 														objectFit: "cover",
+	// 													}}
+	// 												/>
+	// 												<div className='ms-3 mt-2'>
+	// 													<div className='d-flex align-items-center justify-content-between'>
+	// 														<div>
+	// 															<h4 className='mb-0'>{r.profile.full_name}</h4>
+	// 															<span>
+	// 																{moment(r.date).format("DD MMM, YYYY")}
+	// 															</span>
+	// 														</div>
+	// 														<div>
+	// 															<a
+	// 																href='#'
+	// 																data-bs-toggle='tooltip'
+	// 																data-placement='top'
+	// 																title='Report Abuse'>
+	// 																<i className='fe fe-flag' />
+	// 															</a>
+	// 														</div>
+	// 													</div>
+	// 													<div className='mt-2'>
+	// 														<span className='fs-6 me-1 align-top'>
+	// 															<Rater
+	// 																total={5}
+	// 																rating={r.rating || 0}
+	// 															/>
+	// 														</span>
+	// 														<span className='me-1'>for</span>
+	// 														<span className='h5'>{r.course?.title}</span>
+	// 														<p className='mt-2'>
+	// 															<span className='fw-bold me-2'>
+	// 																Review <i className='fas fa-arrow-right'></i>
+	// 															</span>
+	// 															{r.review}
+	// 														</p>
+	// 														<p className='mt-2'>
+	// 															<span className='fw-bold me-2'>
+	// 																Response{" "}
+	// 																<i className='fas fa-arrow-right'></i>
+	// 															</span>
+	// 															{r.reply || "No Reply"}
+	// 														</p>
+	// 														<p>
+	// 															<button
+	// 																className='btn btn-outline-secondary'
+	// 																type='button'
+	// 																data-bs-toggle='collapse'
+	// 																data-bs-target={`#collapse${r.id}`}
+	// 																aria-expanded='false'
+	// 																aria-controls={`collapse${r.id}`}>
+	// 																Send Response
+	// 															</button>
+	// 														</p>
+	// 														<div
+	// 															className='collapse'
+	// 															id={`collapse${r.id}`}>
+	// 															<div className='card card-body'>
+	// 																<div>
+	// 																	<div className='mb-3'>
+	// 																		<label
+	// 																			htmlFor='exampleInputEmail1'
+	// 																			className='form-label'>
+	// 																			Write Response
+	// 																		</label>
+	// 																		<textarea
+	// 																			name=''
+	// 																			id=''
+	// 																			cols={30}
+	// 																			className='form-control'
+	// 																			rows={4}
+	// 																			value={reply}
+	// 																			onChange={(e) =>
+	// 																				setReply(e.target.value)
+	// 																			}></textarea>
+	// 																	</div>
+
+	// 																	<button
+	// 																		type='submit'
+	// 																		className='btn btn-primary'
+	// 																		onClick={() => handleSubmitReply(r.id)}>
+	// 																		Send Response{" "}
+	// 																		<i className='fas fa-paper-plane'> </i>
+	// 																	</button>
+	// 																</div>
+	// 															</div>
+	// 														</div>
+	// 													</div>
+	// 												</div>
+	// 											</div>
+	// 										</li>
+	// 									))}
+
+	// 									{filteredReviews?.length < 1 && (
+	// 										<p className='mt-4 p-3'>No reviews</p>
+	// 									)}
+	// 								</ul>
+	// 							</div>
+	// 						</div>
+	// 					</div>
+	// 				</div>
+	// 			</div>
+	// 		</section>
+
+	// 		<BaseFooter />
+	// 	</>
+	// );
 }
 
 export default Review;

@@ -17,11 +17,13 @@ class User(AbstractUser):
         return self.email
 
     def save(self, *args, **kwargs):
-        email_username, full_name = self.email.split("@")
-        if self.full_name == "" or self.full_name == None:
-            self.full_name == email_username
-        if self.username == "" or self.username == None:
+        email_username, _ = self.email.split("@")
+
+        if not self.full_name:  # fix comparison
+            self.full_name = email_username
+        if not self.username:
             self.username = email_username
+
         super(User, self).save(*args, **kwargs)
 
 
@@ -35,25 +37,26 @@ class Profile(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        if self.full_name:
-            return str(self.full_name)
-        else:
-            return str(self.user.full_name)
+        return self.full_name if self.full_name else self.user.full_name
 
     def save(self, *args, **kwargs):
-        if self.full_name == "" or self.full_name == None:
-            self.full_name == self.user.username
+        if not self.full_name:  # fix comparison
+            self.full_name = self.user.username
         super(Profile, self).save(*args, **kwargs)
 
 
+# ✅ Signal Functions
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
 
 
 def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    # Only save if profile exists
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
 
 
+# ✅ Connect the signals
 post_save.connect(create_user_profile, sender=User)
 post_save.connect(save_user_profile, sender=User)

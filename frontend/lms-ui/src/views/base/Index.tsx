@@ -281,7 +281,7 @@ function Index() {
 														{c.title}
 													</Link>
 												</h4>
-												<small>By: {c.teacher.full_name}</small> <br />
+												<small>By: {c.teacher?.full_name}</small> <br />
 												<small>
 													{c.students?.length} Student
 													{c.students?.length > 1 && "s"}

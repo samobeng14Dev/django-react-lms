@@ -424,7 +424,15 @@ class Review(models.Model):
         return self.course.title
 
     def profile(self):
-        return Profile.objects.get(user=self.user)
+        # Check if a user is associated with the review
+        if self.user:
+            try:
+                return Profile.objects.get(user=self.user)
+            except Profile.DoesNotExist:
+                # This case should ideally not happen if signals are working,
+                # but it's a good fallback to prevent a crash.
+                return None
+        return None # Return None if no user is associated with the review
 
 
 class Notification(models.Model):

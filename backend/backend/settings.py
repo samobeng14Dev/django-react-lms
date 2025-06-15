@@ -46,7 +46,8 @@ INSTALLED_APPS = [
 
     # Custom Apps
     'core',
-    'userauths',
+    'userauths.apps.UserauthsConfig',
+    
     'api',
 
     # Third Party Apps
