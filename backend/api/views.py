@@ -155,6 +155,7 @@ class CourseListAPView(generics.ListAPIView):
         platform_status='Published', teacher_course_status='Published')
     serializer_class = api_serializers.CourseSerializer
     permission_classes = [AllowAny]
+    #  authentication_classes = []
 
 
 class CourseDetailAPIView(generics.RetrieveAPIView):
